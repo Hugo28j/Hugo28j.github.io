@@ -104,18 +104,36 @@ function oilTargetsFor(pyromaniacId) {
     }
 
     function renderWitchAction(action) {
-      const actor = getPlayer(action.actorId);
-      if (!actor || !actor.alive || (actor.lifePotionUsed && actor.deathPotionUsed)) return advanceNightAction();
+      const ids = Array.isArray(action.actorIds) ? action.actorIds : (action.actorId ? [action.actorId] : []);
+      let index = Number.isInteger(action.witchIndex) ? action.witchIndex : 0;
 
+      while (index < ids.length) {
+        const candidate = getPlayer(ids[index]);
+        if (candidate && candidate.alive && candidate.role === "witch" && (!candidate.lifePotionUsed || !candidate.deathPotionUsed)) break;
+        index += 1;
+      }
+
+      action.witchIndex = index;
+      if (index >= ids.length) return advanceNightAction();
+
+      const actor = getPlayer(ids[index]);
+      const allAwake = ids.map(getPlayer).filter(player => player && player.alive && player.role === "witch");
       const victim = state.night.wolfVictimId ? getPlayer(state.night.wolfVictimId) : null;
       const alreadyImmune = victim && (isProtectedTonight(victim.id) || victim.role === "pyromaniac");
       const canSave = !actor.lifePotionUsed && victim && !state.night.wolfVictimSaved && !alreadyImmune;
       const canKill = !actor.deathPotionUsed;
 
+      function finishThisWitch() {
+        action.witchIndex = index + 1;
+        save();
+        renderGame();
+      }
+
       phasePanel.innerHTML = `
-        <h2>🧪 Heks wordt wakker</h2>
-        <div class="alert"><strong>${escapeHtml(actor.name)}</strong> mag maximaal één potion gebruiken.</div>
-        ${victim ? `<div class="alert danger">De weerwolven kozen <strong>${escapeHtml(victim.name)}</strong>. ${alreadyImmune ? "Deze speler is al immuun of beschermd." : ""}</div>` : `<div class="alert success">De weerwolven kozen niemand.</div>`}
+        <h2>🧪 Heksen zijn wakker</h2>
+        <div class="alert"><strong>Wakker:</strong> ${allAwake.map(witch => escapeHtml(witch.name)).join(", ")}</div>
+        <div class="alert warning"><strong>Keuze voor ${escapeHtml(actor.name)}</strong> — elke Heks heeft haar eigen levens- en doodspotion en kiest apart terwijl de Heksen samen wakker blijven.</div>
+        ${victim ? `<div class="alert danger">De weerwolven kozen <strong>${escapeHtml(victim.name)}</strong>. ${alreadyImmune ? "Deze speler is al immuun of beschermd." : ""} ${state.night.wolfVictimSaved ? "Deze speler is al gered." : ""}</div>` : `<div class="alert success">De weerwolven kozen niemand.</div>`}
         <div class="alert">💚 Levenspotion: <strong>${actor.lifePotionUsed ? "gebruikt" : "beschikbaar"}</strong><br>☠️ Doodspotion: <strong>${actor.deathPotionUsed ? "gebruikt" : "beschikbaar"}</strong></div>
         <div class="actions">
           <button id="useLifePotionBtn" class="success" ${canSave ? "" : "disabled"}>Levenspotion gebruiken</button>
@@ -127,7 +145,7 @@ function oilTargetsFor(pyromaniacId) {
         actor.lifePotionUsed = true;
         state.night.wolfVictimSaved = true;
         addLog(`${actor.name} gebruikte de levenspotion op ${victim.name}.`);
-        advanceNightAction();
+        finishThisWitch();
       });
 
       $("chooseDeathPotionBtn").addEventListener("click", () => {
@@ -144,22 +162,25 @@ function oilTargetsFor(pyromaniacId) {
           state.night.witchKillIds.push(targetId);
           state.night.intel.witchAttacks.push({ actorId: actor.id, targetId });
           addLog(`${actor.name} gebruikte de doodspotion op ${target.name}.`);
-          advanceNightAction();
+          finishThisWitch();
         });
       });
-      $("witchDoNothingBtn").addEventListener("click", advanceNightAction);
+
+      $("witchDoNothingBtn").addEventListener("click", finishThisWitch);
     }
 
     function renderImposterAction(action) {
-      const actor = getPlayer(action.actorId);
-      if (!actor || !actor.alive) return advanceNightAction();
-      const candidates = livingPlayers().filter(player => player.id !== actor.id);
+      const actors = actionActors(action, "imposter");
+      if (!actors.length) return advanceNightAction();
+
+      const actorIds = new Set(actors.map(actor => actor.id));
+      const candidates = livingPlayers().filter(player => !actorIds.has(player.id));
       if (!candidates.length) return advanceNightAction();
 
       phasePanel.innerHTML = `
-        <h2>🎭 Imposter wordt wakker</h2>
-        <div class="alert danger"><strong>${escapeHtml(actor.name)}</strong> hoort bij kamp Weerwolven, maar wordt apart wakker.</div>
-        <p class="muted">Kies één speler. De app vertelt alleen of die speler de echte rol Weerwolf heeft.</p>
+        <h2>🎭 Imposters worden wakker</h2>
+        <div class="alert danger"><strong>${actors.map(actor => escapeHtml(actor.name)).join(", ")}</strong> horen bij kamp Weerwolven, maar worden apart van de echte Weerwolven wakker.</div>
+        <p class="muted">Ze kiezen samen één speler. De app vertelt alleen of die speler de echte rol Weerwolf heeft.</p>
         <label for="imposterTarget">Wie controleren?</label><select id="imposterTarget">${options(candidates)}</select>
         <div id="imposterResult"></div><div class="actions"><button id="checkImposterTargetBtn">Controleren</button></div>`;
 
@@ -173,48 +194,77 @@ function oilTargetsFor(pyromaniacId) {
           <button id="hideImposterResultBtn" class="success" style="width:100%">Resultaat verbergen en verdergaan</button>`;
         $("checkImposterTargetBtn").disabled = true;
         $("imposterTarget").disabled = true;
-        addLog(`${actor.name} controleerde of ${target.name} een Weerwolf was.`);
+        addLog(`De Imposters controleerden of ${target.name} een Weerwolf was.`);
         $("hideImposterResultBtn").addEventListener("click", advanceNightAction);
       });
     }
 
-    function formatIntelAction(action, targetFields) {
-      const actor = getPlayer(action.actorId);
+    function formatIntelTargets(action, targetFields) {
       const targets = targetFields.map(field => getPlayer(action[field])).filter(Boolean);
-      return `${actor ? escapeHtml(actor.name) : "Onbekend"} → ${targets.map(target => escapeHtml(target.name)).join(" en ")}`;
+      return targets.map(target => escapeHtml(target.name)).join(" en ");
     }
 
     function renderKnowerAction(action) {
-      const actor = getPlayer(action.actorId);
-      if (!actor || !actor.alive) return advanceNightAction();
+      const actors = actionActors(action, "knower");
+      if (!actors.length) return advanceNightAction();
+
       const intel = state.night.intel;
       const currentlyOiled = livingPlayers().filter(player => (player.oiledByIds || []).length);
       const wolfVictim = intel.wolfVictimId ? getPlayer(intel.wolfVictimId) : null;
-
       const roleWasInGame = roleKey => (state.initialRoleCounts?.[roleKey] || 0) > 0;
       const sections = [];
 
-      if (roleWasInGame("pyromaniac")) {
-        sections.push(["🛢️ Olie gegeven", intel.oilActions.map(item => formatIntelAction(item, ["targetId"]))]);
-        sections.push(["🔥 Verbrandingskeuze", intel.burnActions.map(item => {
-          const pyromaniac = getPlayer(item.actorId);
-          const names = item.targetIds.map(getPlayer).filter(Boolean).map(player => escapeHtml(player.name)).join(", ");
-          return `${pyromaniac ? escapeHtml(pyromaniac.name) : "Onbekend"} → ${names || "niemand"}`;
-        })]);
+      if (roleWasInGame("wolf")) {
+        sections.push(["🐺 Gekozen door de Weerwolven", [wolfVictim ? escapeHtml(wolfVictim.name) : "niemand"]]);
       }
-      if (roleWasInGame("wolf")) sections.push(["🐺 Keuze van de weerwolven", [wolfVictim ? escapeHtml(wolfVictim.name) : "niemand"]]);
-      if (roleWasInGame("witch")) sections.push(["☠️ Aanval van de heks", intel.witchAttacks.map(item => formatIntelAction(item, ["targetId"]))]);
-      if (roleWasInGame("guard")) sections.push(["🛡️ Bescherming van de Guard", intel.guardActions.map(item => formatIntelAction(item, ["targetId"]))]);
-      if (roleWasInGame("detective")) sections.push(["🕵️ Keuzes van de Detective", intel.detectiveActions.map(item => formatIntelAction(item, ["firstId", "secondId"]))]);
-      if (roleWasInGame("seer")) sections.push(["🔮 Keuze van de Ziener", intel.seerActions.map(item => formatIntelAction(item, ["targetId"]))]);
-      if (roleWasInGame("vampireHunter")) sections.push(["🗡️ Doelwit van de Vampierenjager", intel.vampireHunterActions.map(item => formatIntelAction(item, ["targetId"]))]);
+
+      if (roleWasInGame("witch")) {
+        sections.push(["☠️ Aangevallen met een doodspotion",
+          intel.witchAttacks.map(item => formatIntelTargets(item, ["targetId"])).filter(Boolean)]);
+      }
+
+      if (roleWasInGame("guard")) {
+        sections.push(["🛡️ Beschermd",
+          intel.guardActions.map(item => formatIntelTargets(item, ["targetId"])).filter(Boolean)]);
+      }
+
+      if (roleWasInGame("detective")) {
+        sections.push(["🕵️ Door de Detective gekozen",
+          intel.detectiveActions.map(item => formatIntelTargets(item, ["firstId", "secondId"])).filter(Boolean)]);
+      }
+
+      if (roleWasInGame("seer")) {
+        sections.push(["🔮 Door de Ziener bekeken",
+          intel.seerActions.map(item => formatIntelTargets(item, ["targetId"])).filter(Boolean)]);
+      }
+
+      if (roleWasInGame("vampireHunter")) {
+        sections.push(["🗡️ Door de Vampierenjager gekozen",
+          intel.vampireHunterActions.map(item => formatIntelTargets(item, ["targetId"])).filter(Boolean)]);
+      }
+
+      const oilTable = roleWasInGame("pyromaniac")
+        ? `<div class="alert neutral">
+             <strong>🛢️ Geoliede spelers</strong>
+             <table class="intel-table">
+               <tbody>
+                 ${currentlyOiled.length
+                   ? currentlyOiled.map(player => `<tr><td>${escapeHtml(player.name)}</td></tr>`).join("")
+                   : `<tr><td>niemand</td></tr>`}
+               </tbody>
+             </table>
+           </div>`
+        : "";
 
       phasePanel.innerHTML = `
         <h2>🧠 Betweter wordt wakker</h2>
-        <div class="alert"><strong>${escapeHtml(actor.name)}</strong> ziet wie welke doelen koos, maar nooit welke rol of welk kamp daarbij ontdekt werd. Alleen rollen die echt bij de start van dit spel aanwezig waren, worden hier getoond.</div>
-        ${sections.length ? sections.map(([title, lines]) => `<div class="alert"><strong>${title}</strong><br>${lines.length ? lines.join("<br>") : "geen actie"}</div>`).join("") : `<div class="alert">Er zijn deze nacht geen relevante rollen om informatie over te tonen.</div>`}
-        ${roleWasInGame("pyromaniac") ? `<div class="alert neutral"><strong>Momenteel met olie:</strong><br>${currentlyOiled.length ? currentlyOiled.map(player => escapeHtml(player.name)).join(", ") : "niemand"}</div>` : ""}
+        <div class="alert">De Betweter ziet alleen <strong>welke spelers</strong> gekozen, bekeken, aangevallen of beschermd werden. Er wordt nergens getoond welke speler de Ziener, Detective, Guard, Heks, Pyromaan of Vampierenjager is.</div>
+        ${oilTable}
+        ${sections.length
+          ? sections.map(([title, lines]) => `<div class="alert"><strong>${title}</strong><br>${lines.length ? lines.join("<br>") : "geen actie"}</div>`).join("")
+          : `<div class="alert">Er zijn deze nacht geen relevante rollen om informatie over te tonen.</div>`}
         <button id="closeKnowerBtn" class="success" style="width:100%">Informatie verbergen en verdergaan</button>`;
+
       $("closeKnowerBtn").addEventListener("click", advanceNightAction);
     }
 

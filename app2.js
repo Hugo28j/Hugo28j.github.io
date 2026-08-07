@@ -53,6 +53,19 @@ function renderPlayersOverview() {
       return action.type === "ghost" ? action.ghostType : action.type;
     }
 
+    function actionActors(action, roleKey = null) {
+      const ids = Array.isArray(action.actorIds)
+        ? action.actorIds
+        : (action.actorId ? [action.actorId] : []);
+      return ids
+        .map(getPlayer)
+        .filter(player => player && player.alive && (!roleKey || player.role === roleKey));
+    }
+
+    function actionActorNames(action, roleKey = null) {
+      return actionActors(action, roleKey).map(player => escapeHtml(player.name)).join(", ");
+    }
+
     function shouldShowGhostAction(actionType) {
       if (!nightActionAppliesTonight(actionType)) return false;
 
@@ -93,25 +106,39 @@ function renderPlayersOverview() {
       if (state.day === 1) {
         livingByRole("doppelganger").filter(player => !player.doppelgangerUsed)
           .forEach(player => queue.push({ type: "doppelganger", actorId: player.id }));
-        livingByRole("cupid").filter(player => !player.cupidUsed)
-          .forEach(player => queue.push({ type: "cupid", actorId: player.id }));
+
+        const cupids = livingByRole("cupid").filter(player => !player.cupidUsed);
+        if (cupids.length) queue.push({ type: "cupid", actorIds: cupids.map(player => player.id) });
       }
 
       livingByRole("survivor").filter(player => !player.hideUsed)
         .forEach(player => queue.push({ type: "survivor", actorId: player.id }));
-      livingByRole("seer").forEach(player => queue.push({ type: "seer", actorId: player.id }));
-      livingByRole("detective").forEach(player => queue.push({ type: "detective", actorId: player.id }));
-      livingByRole("guard").forEach(player => queue.push({ type: "guard", actorId: player.id }));
-      livingByRole("vampireHunter").forEach(player => queue.push({ type: "vampireHunter", actorId: player.id }));
+
+      const seers = livingByRole("seer");
+      if (seers.length) queue.push({ type: "seer", actorIds: seers.map(player => player.id) });
+
+      const detectives = livingByRole("detective");
+      if (detectives.length) queue.push({ type: "detective", actorIds: detectives.map(player => player.id) });
+
+      const guards = livingByRole("guard");
+      if (guards.length) queue.push({ type: "guard", actorIds: guards.map(player => player.id) });
+
+      const vampireHunters = livingByRole("vampireHunter");
+      if (vampireHunters.length) queue.push({ type: "vampireHunter", actorIds: vampireHunters.map(player => player.id) });
+
       livingByRole("pyromaniac").forEach(player => queue.push({ type: "pyromaniac", actorId: player.id }));
       livingByRole("dictator").forEach(player => queue.push({ type: "dictator", actorId: player.id }));
 
       if (livingWolves().length) queue.push({ type: "wolves" });
 
-      livingByRole("witch").filter(player => !player.lifePotionUsed || !player.deathPotionUsed)
-        .forEach(player => queue.push({ type: "witch", actorId: player.id }));
-      livingByRole("imposter").forEach(player => queue.push({ type: "imposter", actorId: player.id }));
-      livingByRole("knower").forEach(player => queue.push({ type: "knower", actorId: player.id }));
+      const witches = livingByRole("witch").filter(player => !player.lifePotionUsed || !player.deathPotionUsed);
+      if (witches.length) queue.push({ type: "witch", actorIds: witches.map(player => player.id), witchIndex: 0 });
+
+      const imposters = livingByRole("imposter");
+      if (imposters.length) queue.push({ type: "imposter", actorIds: imposters.map(player => player.id) });
+
+      const knowers = livingByRole("knower");
+      if (knowers.length) queue.push({ type: "knower", actorIds: knowers.map(player => player.id) });
 
       if (state.day % 2 === 1 && livingVampires().length) queue.push({ type: "vampires" });
       return addNarratorPlaceholders(queue);
@@ -262,20 +289,20 @@ function renderPlayersOverview() {
     }
 
     function renderCupidAction(action) {
-      const cupid = getPlayer(action.actorId);
-      if (!cupid || !cupid.alive || cupid.cupidUsed || state.day !== 1) return advanceNightAction();
+      const cupids = actionActors(action, "cupid").filter(player => !player.cupidUsed);
+      if (!cupids.length || state.day !== 1) return advanceNightAction();
 
       const candidates = livingPlayers().filter(player => !(player.loverIds || []).length);
       if (candidates.length < 2) {
-        cupid.cupidUsed = true;
-        addLog(`${cupid.name} kon geen twee vrije spelers meer koppelen.`);
+        cupids.forEach(cupid => cupid.cupidUsed = true);
+        addLog(`Cupido kon geen twee vrije spelers meer koppelen.`);
         return advanceNightAction();
       }
 
       phasePanel.innerHTML = `
         <h2>💘 Cupido wordt wakker</h2>
-        <div class="alert"><strong>${escapeHtml(cupid.name)}</strong> kiest twee verschillende spelers die verliefd worden.</div>
-        <p class="muted">De geliefden zien elkaars rol. Hebben ze verschillende kampen, dan vormen ze kamp Koppel.</p>
+        <div class="alert"><strong>${cupids.map(cupid => escapeHtml(cupid.name)).join(", ")}</strong> kiezen samen één koppel.</div>
+        <p class="muted">Alle levende Cupido's delen dus dezelfde keuze. De geliefden zien elkaars rol. Hebben ze verschillende kampen, dan vormen ze kamp Koppel.</p>
         <label for="cupidFirst">Eerste geliefde</label>
         <select id="cupidFirst">${options(candidates)}</select>
         <label for="cupidSecond" style="margin-top:11px">Tweede geliefde</label>
@@ -299,7 +326,7 @@ function renderPlayersOverview() {
           first.forcedCampKey = "couple";
           second.forcedCampKey = "couple";
         }
-        cupid.cupidUsed = true;
+        cupids.forEach(cupid => cupid.cupidUsed = true);
 
         const firstRole = ROLES[first.role];
         const secondRole = ROLES[second.role];
@@ -315,7 +342,7 @@ function renderPlayersOverview() {
         $("confirmCupidBtn").disabled = true;
         $("cupidFirst").disabled = true;
         $("cupidSecond").disabled = true;
-        addLog(`${cupid.name} maakte ${first.name} en ${second.name} verliefd.${sameCamp ? " Zij bleven in hetzelfde kamp." : " Zij vormen kamp Koppel."}`);
+        addLog(`Cupido maakte ${first.name} en ${second.name} verliefd.${sameCamp ? " Zij bleven in hetzelfde kamp." : " Zij vormen kamp Koppel."}`);
         $("hideCupidResultBtn").addEventListener("click", advanceNightAction);
       });
     }
@@ -343,12 +370,12 @@ function renderPlayersOverview() {
     }
 
     function renderSeerAction(action) {
-      const actor = getPlayer(action.actorId);
-      if (!actor || !actor.alive) return advanceNightAction();
+      const actors = actionActors(action, "seer");
+      if (!actors.length) return advanceNightAction();
 
       phasePanel.innerHTML = `
-        <h2>🔮 Ziener wordt wakker</h2>
-        <div class="alert"><strong>${escapeHtml(actor.name)}</strong> kiest één levende speler en bekijkt diens rolkaart.</div>
+        <h2>🔮 Zieners worden wakker</h2>
+        <div class="alert"><strong>${actors.map(actor => escapeHtml(actor.name)).join(", ")}</strong> kiezen samen één levende speler en zien allemaal dezelfde rolkaart.</div>
         <label for="seerTarget">Kaart van welke speler bekijken?</label>
         <select id="seerTarget">${options(livingPlayers())}</select>
         <div id="seerRevealArea"></div>
@@ -359,27 +386,29 @@ function renderPlayersOverview() {
         if (!targetId) return alert("Kies eerst een speler.");
         const target = getPlayer(targetId);
         const role = ROLES[target.role];
-        state.night.intel.seerActions.push({ actorId: actor.id, targetId });
+        state.night.intel.seerActions.push({ actorIds: actors.map(actor => actor.id), targetId });
         $("seerRevealArea").innerHTML = `
           <div class="role-reveal"><span class="icon">${role.icon}</span><strong>${escapeHtml(target.name)} is ${role.label}</strong><div class="muted" style="margin-top:6px">Kamp: ${escapeHtml(campLabel(target))}</div></div>
           <button id="hideCardBtn" class="success" style="width:100%">Kaart verbergen en verdergaan</button>`;
         $("revealRoleBtn").disabled = true;
         $("seerTarget").disabled = true;
-        addLog(`${actor.name} bekeek de kaart van ${target.name}.`);
+        addLog(`De Zieners bekeken de kaart van ${target.name}.`);
         $("hideCardBtn").addEventListener("click", advanceNightAction);
       });
     }
 
     function renderDetectiveAction(action) {
-      const actor = getPlayer(action.actorId);
-      if (!actor || !actor.alive) return advanceNightAction();
-      const candidates = livingPlayers().filter(player => player.id !== actor.id);
+      const actors = actionActors(action, "detective");
+      if (!actors.length) return advanceNightAction();
+
+      const actorIds = new Set(actors.map(actor => actor.id));
+      const candidates = livingPlayers().filter(player => !actorIds.has(player.id));
       if (candidates.length < 2) return advanceNightAction();
 
       phasePanel.innerHTML = `
-        <h2>🕵️ Detective wordt wakker</h2>
-        <div class="alert"><strong>${escapeHtml(actor.name)}</strong> kiest twee verschillende spelers.</div>
-        <p class="muted">Hij krijgt alleen te weten of hun effectieve kampen gelijk zijn en mag zichzelf niet kiezen.</p>
+        <h2>🕵️ Detectives worden wakker</h2>
+        <div class="alert"><strong>${actors.map(actor => escapeHtml(actor.name)).join(", ")}</strong> kiezen samen twee verschillende spelers.</div>
+        <p class="muted">Ze krijgen samen alleen te weten of de effectieve kampen gelijk zijn. Geen van de Detectives kan als doelwit gekozen worden.</p>
         <label for="detectiveFirst">Eerste speler</label><select id="detectiveFirst">${options(candidates)}</select>
         <label for="detectiveSecond" style="margin-top:11px">Tweede speler</label><select id="detectiveSecond">${options(candidates)}</select>
         <div id="detectiveResultArea"></div>
@@ -393,30 +422,33 @@ function renderPlayersOverview() {
         const first = getPlayer(firstId);
         const second = getPlayer(secondId);
         const sameCamp = effectiveCamp(first) === effectiveCamp(second);
-        state.night.intel.detectiveActions.push({ actorId: actor.id, firstId, secondId });
+        state.night.intel.detectiveActions.push({ actorIds: actors.map(actor => actor.id), firstId, secondId });
         $("detectiveResultArea").innerHTML = `
           <div class="role-reveal"><span class="icon">${sameCamp ? "✅" : "❌"}</span><strong>${sameCamp ? "Dezelfde kamp" : "Niet dezelfde kamp"}</strong><div class="muted" style="margin-top:6px">${escapeHtml(first.name)} en ${escapeHtml(second.name)}</div></div>
           <button id="hideDetectiveResultBtn" class="success" style="width:100%">Resultaat verbergen en verdergaan</button>`;
         $("detectiveFirst").disabled = true;
         $("detectiveSecond").disabled = true;
         $("detectiveCheckBtn").disabled = true;
-        addLog(`${actor.name} vergeleek de kampen van ${first.name} en ${second.name}.`);
+        addLog(`De Detectives vergeleken de kampen van ${first.name} en ${second.name}.`);
         $("hideDetectiveResultBtn").addEventListener("click", advanceNightAction);
       });
     }
 
     function renderGuardAction(action) {
-      const actor = getPlayer(action.actorId);
-      if (!actor || !actor.alive) return advanceNightAction();
-      const candidates = livingPlayers().filter(player => player.id !== actor.lastProtectedId);
-      const previous = actor.lastProtectedId ? getPlayer(actor.lastProtectedId) : null;
+      const actors = actionActors(action, "guard");
+      if (!actors.length) return advanceNightAction();
+
+      const blockedIds = new Set(actors.map(actor => actor.lastProtectedId).filter(Boolean));
+      const candidates = livingPlayers().filter(player => !blockedIds.has(player.id));
       if (!candidates.length) return advanceNightAction();
 
+      const previousNames = [...blockedIds].map(getPlayer).filter(Boolean).map(player => escapeHtml(player.name));
+
       phasePanel.innerHTML = `
-        <h2>🛡️ Guard wordt wakker</h2>
-        <div class="alert"><strong>${escapeHtml(actor.name)}</strong> beschermt één levende speler tegen alle nachtelijke doden behalve het jagerschot en de vampiertransformatie.</div>
-        <p class="muted">De Guard mag zichzelf beschermen, maar niet dezelfde persoon als vorige nacht.</p>
-        ${previous ? `<div class="alert warning">Vorige nacht: <strong>${escapeHtml(previous.name)}</strong></div>` : ""}
+        <h2>🛡️ Guards worden wakker</h2>
+        <div class="alert"><strong>${actors.map(actor => escapeHtml(actor.name)).join(", ")}</strong> kiezen samen één levende speler om deze nacht te beschermen.</div>
+        <p class="muted">De gezamenlijke keuze mag geen speler zijn die één van deze Guards de vorige nacht heeft beschermd.</p>
+        ${previousNames.length ? `<div class="alert warning">Vorige nacht beschermd: <strong>${previousNames.join(", ")}</strong></div>` : ""}
         <label for="guardTarget">Wie beschermen?</label><select id="guardTarget">${options(candidates)}</select>
         <div class="actions"><button id="confirmGuardBtn" class="success">Bescherming bevestigen</button></div>`;
 
@@ -424,10 +456,10 @@ function renderPlayersOverview() {
         const targetId = $("guardTarget").value;
         if (!targetId) return alert("Kies eerst een speler.");
         const target = getPlayer(targetId);
-        actor.lastProtectedId = targetId;
+        actors.forEach(actor => actor.lastProtectedId = targetId);
         if (!state.night.guardedIds.includes(targetId)) state.night.guardedIds.push(targetId);
-        state.night.intel.guardActions.push({ actorId: actor.id, targetId });
-        addLog(`${actor.name} beschermde ${target.name}.`);
+        state.night.intel.guardActions.push({ actorIds: actors.map(actor => actor.id), targetId });
+        addLog(`De Guards beschermden ${target.name}.`);
         advanceNightAction();
       });
     }
@@ -443,28 +475,35 @@ function renderPlayersOverview() {
     }
 
     function renderVampireHunterAction(action) {
-      const actor = getPlayer(action.actorId);
-      if (!actor || !actor.alive) return advanceNightAction();
-      const candidates = livingPlayers().filter(player => player.id !== actor.id);
+      const actors = actionActors(action, "vampireHunter");
+      if (!actors.length) return advanceNightAction();
+
+      const actorIds = new Set(actors.map(actor => actor.id));
+      const candidates = livingPlayers().filter(player => !actorIds.has(player.id));
       if (!candidates.length) return advanceNightAction();
 
       phasePanel.innerHTML = `
-        <h2>🗡️ Vampierenjager wordt wakker</h2>
-        <div class="alert"><strong>${escapeHtml(actor.name)}</strong> krijgt één willekeurig levend doelwit.</div>
-        <p class="muted">Is het doelwit een Vampier, dan wordt die deze nacht aangevallen. Anders gebeurt niets.</p>
+        <h2>🗡️ Vampierenjagers worden wakker</h2>
+        <div class="alert"><strong>${actors.map(actor => escapeHtml(actor.name)).join(", ")}</strong> kiezen samen één levende speler als doelwit.</div>
+        <p class="muted">Is het gekozen doelwit een Vampier, dan wordt die deze nacht gedood. Anders gebeurt er niets.</p>
+        <label for="vampireHunterTarget">Doelwit</label>
+        <select id="vampireHunterTarget">${options(candidates)}</select>
         <div id="vampireHunterResult"></div>
-        <div class="actions"><button id="drawVampireHunterTargetBtn">Kies willekeurig doelwit</button></div>`;
+        <div class="actions"><button id="confirmVampireHunterTargetBtn">Doelwit bevestigen</button></div>`;
 
-      $("drawVampireHunterTargetBtn").addEventListener("click", () => {
-        const target = randomChoice(candidates);
+      $("confirmVampireHunterTargetBtn").addEventListener("click", () => {
+        const targetId = $("vampireHunterTarget").value;
+        if (!targetId) return alert("Kies eerst een doelwit.");
+        const target = getPlayer(targetId);
         const isVampire = target.role === "vampire";
-        state.night.intel.vampireHunterActions.push({ actorId: actor.id, targetId: target.id });
+        state.night.intel.vampireHunterActions.push({ actorIds: actors.map(actor => actor.id), targetId: target.id });
         if (isVampire && !state.night.vampireHunterKillIds.includes(target.id)) state.night.vampireHunterKillIds.push(target.id);
         $("vampireHunterResult").innerHTML = `
-          <div class="role-reveal"><span class="icon">${isVampire ? "🧛" : "✅"}</span><strong>${escapeHtml(target.name)}</strong><div class="muted" style="margin-top:7px">${isVampire ? "Dit is een Vampier en wordt aangevallen." : "Dit is geen Vampier. Er gebeurt niets."}</div></div>
+          <div class="role-reveal"><span class="icon">${isVampire ? "🧛" : "✅"}</span><strong>${escapeHtml(target.name)}</strong><div class="muted" style="margin-top:7px">${isVampire ? "Dit is een Vampier en wordt deze nacht gedood." : "Dit is geen Vampier. Er gebeurt niets."}</div></div>
           <button id="closeVampireHunterResultBtn" class="success" style="width:100%">Resultaat verbergen en verdergaan</button>`;
-        $("drawVampireHunterTargetBtn").disabled = true;
-        addLog(`${actor.name} controleerde willekeurig ${target.name}.`);
+        $("confirmVampireHunterTargetBtn").disabled = true;
+        $("vampireHunterTarget").disabled = true;
+        addLog(`De Vampierenjagers kozen ${target.name} als doelwit.`);
         $("closeVampireHunterResultBtn").addEventListener("click", advanceNightAction);
       });
     }

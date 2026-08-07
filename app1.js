@@ -1,7 +1,7 @@
 "use strict";
 
-    const STORAGE_KEY = "weerwolven_verteller_v9";
-    const HISTORY_KEY = "weerwolven_verteller_v8_history";
+    const STORAGE_KEY = "weerwolven_verteller_v10";
+    const HISTORY_KEY = "weerwolven_verteller_v10_history";
 
     const ROLES = {
       villager: { label: "Burger", icon: "👤", camp: "Dorp", campKey: "village", campClass: "village" },
@@ -54,7 +54,7 @@
       seer: { icon: "🔮", label: "Ziener", call: "Ziener, word wakker en kies één speler van wie je de rol wilt bekijken." },
       detective: { icon: "🕵️", label: "Detective", call: "Detective, word wakker en kies twee verschillende spelers om hun kampen te vergelijken." },
       guard: { icon: "🛡️", label: "Guard", call: "Guard, word wakker en kies één speler die je deze nacht beschermt." },
-      vampireHunter: { icon: "🗡️", label: "Vampierenjager", call: "Vampierenjager, word wakker. Je onderzoekt deze nacht één willekeurige speler." },
+      vampireHunter: { icon: "🗡️", label: "Vampierenjager", call: "Vampierenjager, word wakker en kies één levende speler als doelwit. Als die speler een Vampier is, dood je die." },
       pyromaniac: { icon: "🔥", label: "Pyromaan", call: "Pyromaan, word wakker. Kies of je iemand met olie overgiet of eerder geoliede spelers verbrandt." },
       dictator: { icon: "🎖️", label: "Dictator", call: "Dictator, word wakker en kies of je voor de volgende ochtend een staatsgreep plant." },
       wolves: { icon: "🐺", label: "Weerwolven", call: "Weerwolven, word wakker en kies samen één levende speler om op te eten." },
