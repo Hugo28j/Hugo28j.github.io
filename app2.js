@@ -31,6 +31,8 @@ function renderPlayersOverview() {
         case "dawn": renderDawn(); break;
         case "morningResult": renderMorningResult(); break;
         case "dictatorCoup": renderDictatorCoup(); break;
+        case "dictatorCoupReveal": renderDictatorCoupReveal(); break;
+        case "chameleonReveal": renderChameleonReveal(); break;
         case "mayorElection": renderMayorElection(); break;
         case "day": renderDay(); break;
         case "vote": renderVote(); break;
@@ -45,6 +47,7 @@ function renderPlayersOverview() {
 
     function nightActionAppliesTonight(actionType) {
       if (actionType === "doppelganger" || actionType === "cupid") return state.day === 1;
+      if (actionType === "chameleon") return state.day === 2;
       if (actionType === "vampires") return state.day % 2 === 1;
       return true;
     }
@@ -69,13 +72,16 @@ function renderPlayersOverview() {
     function shouldShowGhostAction(actionType) {
       if (!nightActionAppliesTonight(actionType)) return false;
 
+      const roleKey = NIGHT_ACTION_ROLE_KEY[actionType];
+      // Als de Vampieren een nachtrol hebben overgenomen, blijft die rol bewust
+      // als lege vertellerstap terugkomen zodat niemand de transformatie kan afleiden.
+      if (roleWasTakenByVampires(roleKey)) return true;
+
       if (state.narratorMode === "hideDead") {
-        const roleKey = NIGHT_ACTION_ROLE_KEY[actionType];
         return (state.initialRoleCounts?.[roleKey] || 0) > 0;
       }
 
       if (state.narratorMode === "customGhost") {
-        const roleKey = NIGHT_ACTION_ROLE_KEY[actionType];
         const existedAtStart = (state.initialRoleCounts?.[roleKey] || 0) > 0;
         return existedAtStart || state.alwaysShownRoles.includes(actionType);
       }
@@ -128,6 +134,11 @@ function renderPlayersOverview() {
 
       livingByRole("pyromaniac").forEach(player => queue.push({ type: "pyromaniac", actorId: player.id }));
       livingByRole("dictator").forEach(player => queue.push({ type: "dictator", actorId: player.id }));
+
+      if (state.day === 2) {
+        const chameleons = livingByRole("chameleon").filter(player => !player.chameleonChoice);
+        if (chameleons.length) queue.push({ type: "chameleon", actorIds: chameleons.map(player => player.id), chameleonIndex: 0 });
+      }
 
       if (livingWolves().length) queue.push({ type: "wolves" });
 
@@ -208,6 +219,7 @@ function renderPlayersOverview() {
         vampireHunter: renderVampireHunterAction,
         pyromaniac: renderPyromaniacAction,
         dictator: renderDictatorAction,
+        chameleon: renderChameleonAction,
         wolves: renderWolvesAction,
         witch: renderWitchAction,
         imposter: renderImposterAction,

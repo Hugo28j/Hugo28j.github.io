@@ -37,6 +37,10 @@ function addSetupPlayer() {
         vampireOrder,
         convertedNight: isVampire ? 0 : null,
         wasConvertedToVampire: false,
+        preVampireRole: null,
+        preVampireCampKey: null,
+        chameleonChoice: null,
+        chameleonRevealed: false,
         setupIndex: index
       };
     }
@@ -87,6 +91,10 @@ function addSetupPlayer() {
         vampireOrder: null,
         convertedNight: null,
         wasConvertedToVampire: false,
+        preVampireRole: null,
+        preVampireCampKey: null,
+        chameleonChoice: null,
+        chameleonRevealed: false,
         ...player
       };
     }

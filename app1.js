@@ -1,12 +1,13 @@
 "use strict";
 
-    const STORAGE_KEY = "weerwolven_verteller_v10";
-    const HISTORY_KEY = "weerwolven_verteller_v10_history";
+    const STORAGE_KEY = "weerwolven_verteller_v11";
+    const HISTORY_KEY = "weerwolven_verteller_v11_history";
 
     const ROLES = {
       villager: { label: "Burger", icon: "👤", camp: "Dorp", campKey: "village", campClass: "village" },
       doppelganger: { label: "Dubbelganger", icon: "🪞", camp: "Dubbelganger", campKey: "doppelganger", campClass: "neutral" },
       cupid: { label: "Cupido", icon: "💘", camp: "Dorp", campKey: "village", campClass: "village" },
+      chameleon: { label: "Kameleon", icon: "🦎", camp: "Dorp", campKey: "village", campClass: "village" },
       wolf: { label: "Weerwolf", icon: "🐺", camp: "Weerwolven", campKey: "wolves", campClass: "wolf" },
       imposter: { label: "Imposter", icon: "🎭", camp: "Weerwolven", campKey: "wolves", campClass: "wolf" },
       vampire: { label: "Vampier", icon: "🧛", camp: "Vampieren", campKey: "vampires", campClass: "wolf" },
@@ -26,7 +27,7 @@
 
     const NIGHT_ACTION_ORDER = [
       "doppelganger", "cupid", "survivor", "seer", "detective", "guard",
-      "vampireHunter", "pyromaniac", "dictator", "wolves", "witch",
+      "vampireHunter", "pyromaniac", "dictator", "chameleon", "wolves", "witch",
       "imposter", "knower", "vampires"
     ];
 
@@ -40,6 +41,7 @@
       vampireHunter: "vampireHunter",
       pyromaniac: "pyromaniac",
       dictator: "dictator",
+      chameleon: "chameleon",
       wolves: "wolf",
       witch: "witch",
       imposter: "imposter",
@@ -57,6 +59,7 @@
       vampireHunter: { icon: "🗡️", label: "Vampierenjager", call: "Vampierenjager, word wakker en kies één levende speler als doelwit. Als die speler een Vampier is, dood je die." },
       pyromaniac: { icon: "🔥", label: "Pyromaan", call: "Pyromaan, word wakker. Kies of je iemand met olie overgiet of eerder geoliede spelers verbrandt." },
       dictator: { icon: "🎖️", label: "Dictator", call: "Dictator, word wakker en kies of je voor de volgende ochtend een staatsgreep plant." },
+      chameleon: { icon: "🦎", label: "Kameleon", call: "Kameleon, word wakker. Alleen tijdens nacht 2 kies je of je bij het Dorp blijft of in het geheim de kant van de Weerwolven kiest." },
       wolves: { icon: "🐺", label: "Weerwolven", call: "Weerwolven, word wakker en kies samen één levende speler om op te eten." },
       witch: { icon: "🧪", label: "Heks", call: "Heks, word wakker. Bekijk het doelwit van de weerwolven en kies of je maximaal één potion gebruikt." },
       imposter: { icon: "🎭", label: "Imposter", call: "Imposter, word wakker en kies één speler om te controleren of die een echte Weerwolf is." },
@@ -123,6 +126,8 @@
         morningQueue: [],
         afterMorningPhase: null,
         pendingCoupMayorId: null,
+        pendingCoupExecution: null,
+        chameleonRevealPending: [],
         nextVampireOrder: 1,
         nightDeathResults: [],
         morningDeathsAnnounced: false,
@@ -283,17 +288,48 @@
     }
 
     function effectiveCamp(player) {
+      if (player.forcedCampKey === "couple") return "couple";
+      if (player.role === "chameleon" && player.chameleonChoice === "wolves") return "wolves";
       return player.forcedCampKey || ROLES[player.role].campKey;
     }
 
     function campLabel(player) {
       if (player.forcedCampKey === "couple") return "Koppel";
+      if (player.role === "chameleon" && player.chameleonChoice === "wolves") return "Weerwolven";
       return ROLES[player.role].camp;
     }
 
     function campClass(player) {
       if (player.forcedCampKey === "couple") return "neutral";
+      if (player.role === "chameleon" && player.chameleonChoice === "wolves") return "wolf";
       return ROLES[player.role].campClass;
+    }
+
+    function roleWasTakenByVampires(roleKey) {
+      return state.players.some(player => player.wasConvertedToVampire && player.preVampireRole === roleKey);
+    }
+
+    function maybePromoteWolfChameleons() {
+      if (livingByRole("wolf").length > 0) return [];
+
+      const promoted = livingPlayers().filter(player =>
+        player.role === "chameleon" &&
+        player.chameleonChoice === "wolves" &&
+        !player.chameleonRevealed
+      );
+
+      if (!promoted.length) return [];
+
+      state.chameleonRevealPending = state.chameleonRevealPending || [];
+      promoted.forEach(player => {
+        player.role = "wolf";
+        player.chameleonRevealed = true;
+        if (player.forcedCampKey !== "couple") player.forcedCampKey = null;
+        if (!state.chameleonRevealPending.includes(player.id)) state.chameleonRevealPending.push(player.id);
+        addLog(`${player.name} had in nacht 2 voor kamp Weerwolven gekozen en wordt nu onthuld als Weerwolf.`);
+      });
+
+      return promoted;
     }
 
     function livingByCamp(campKey) {

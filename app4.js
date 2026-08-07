@@ -82,6 +82,8 @@ function beginDayDeath(id, reason, voteCount = null) {
 
       if (wasMayor && !options.suppressMayorSuccessor) state.pendingActions.push({ type: "mayorSuccessor", actorId: player.id });
       if (player.role === "hunter" && !player.hunterUsed) state.pendingActions.push({ type: "hunterShot", actorId: player.id });
+
+      if (player.role === "wolf") maybePromoteWolfChameleons();
     }
 
     function processResolution() {
@@ -165,8 +167,14 @@ function beginDayDeath(id, reason, voteCount = null) {
 
     function finishResolution() {
       const next = state.resumePhase;
-      state.resumePhase = null;
       state.nightResolutionActive = false;
+
+      if ((state.chameleonRevealPending || []).length && next !== "dayResult") {
+        state.phase = "chameleonReveal";
+        save(); renderGame(); return;
+      }
+
+      state.resumePhase = null;
 
       if (next === "dayResult") {
         if (state.pendingWinner) {
@@ -193,6 +201,32 @@ function beginDayDeath(id, reason, voteCount = null) {
 
       state.phase = next || "day";
       save(); renderGame();
+    }
+
+    function renderChameleonReveal() {
+      const players = (state.chameleonRevealPending || []).map(getPlayer).filter(Boolean);
+      if (!players.length) {
+        state.chameleonRevealPending = [];
+        return finishResolution();
+      }
+
+      phasePanel.innerHTML = `
+        <h2>🐺 Kameleon onthuld</h2>
+        <p class="step">Maak nu bekend dat ${players.length === 1 ? "deze Kameleon" : "deze Kameleons"} tijdens nacht 2 voor de kant van de Weerwolven ${players.length === 1 ? "koos" : "kozen"}.</p>
+        <div class="morning-death-list">
+          ${players.map(player => `
+            <div class="morning-death-card">
+              <strong>🦎 ${escapeHtml(player.name)} → 🐺 Weerwolf</strong>
+              <div class="muted">Alle gewone Weerwolven zijn verdwenen. De rol verandert nu openbaar naar Weerwolf met alle Weerwolf-abilities.</div>
+            </div>`).join("")}
+        </div>
+        <div class="actions"><button id="continueAfterChameleonRevealBtn" class="success">Verder</button></div>`;
+
+      $("continueAfterChameleonRevealBtn").addEventListener("click", () => {
+        state.chameleonRevealPending = [];
+        save();
+        finishResolution();
+      });
     }
 
     function continueMorningActions() {
@@ -254,15 +288,50 @@ function beginDayDeath(id, reason, voteCount = null) {
         const targetId = $("coupTarget").value;
         if (!targetId) return alert("Kies eerst een speler.");
         const target = getPlayer(targetId);
-        const targetIsVillage = effectiveCamp(target) === "village";
+        state.pendingCoupExecution = {
+          dictatorId: dictator.id,
+          targetId: target.id,
+          targetIsVillage: effectiveCamp(target) === "village"
+        };
         dictator.coupPendingNight = null;
         state.morningQueue.shift();
+        state.phase = "dictatorCoupReveal";
+        save();
+        renderGame();
+      });
+    }
+
+    function renderDictatorCoupReveal() {
+      const execution = state.pendingCoupExecution;
+      if (!execution) { state.phase = "day"; save(); renderGame(); return; }
+
+      const dictator = getPlayer(execution.dictatorId);
+      const target = getPlayer(execution.targetId);
+      if (!dictator || !target) {
+        state.pendingCoupExecution = null;
+        return continueMorningActions();
+      }
+
+      const role = ROLES[target.role];
+      phasePanel.innerHTML = `
+        <h2>🎖️ Doelwit van de staatsgreep</h2>
+        <p class="muted">Toon/lees dit resultaat voordat je de gevolgen van de coup afhandelt.</p>
+        <div class="result-name">${escapeHtml(target.name)}</div>
+        <div class="role-reveal">
+          <span class="icon">${role.icon}</span>
+          <strong>${escapeHtml(role.label)}</strong>
+          <div class="muted" style="margin-top:6px">Kamp: ${escapeHtml(campLabel(target))}</div>
+        </div>
+        <div class="actions"><button id="executeCoupAfterRevealBtn" class="danger">Coup uitvoeren en verdergaan</button></div>`;
+
+      $("executeCoupAfterRevealBtn").addEventListener("click", () => {
+        state.pendingCoupExecution = null;
         state.deathQueue = [];
         state.pendingActions = [];
         state.resumePhase = "morningActions";
         state.nightResolutionActive = false;
 
-        if (targetIsVillage) {
+        if (execution.targetIsVillage) {
           addLog(`${dictator.name} executeerde ${target.name}, maar het doelwit hoorde bij kamp Dorp. De Dictator sterft ook.`);
           state.deathQueue.push({ id: target.id, reason: `werd geëxecuteerd tijdens de coup van ${dictator.name}`, ignoreProtection: true });
           state.deathQueue.push({ id: dictator.id, reason: "stierf omdat de coup een lid van kamp Dorp trof", ignoreProtection: true });
@@ -382,13 +451,19 @@ function beginDayDeath(id, reason, voteCount = null) {
       const result = state.dayResult;
       if (!result) { state.phase = "day"; renderGame(); return; }
 
+      const revealedChameleons = (state.chameleonRevealPending || []).map(getPlayer).filter(Boolean);
+      const chameleonNotice = revealedChameleons.length
+        ? `<div class="alert danger"><strong>🐺 Kameleon onthuld:</strong><br>${revealedChameleons.map(player => `${escapeHtml(player.name)} koos in nacht 2 voor de Weerwolven en is nu een echte Weerwolf.`).join("<br>")}</div>`
+        : "";
+
       if (result.noDeath) {
-        phasePanel.innerHTML = `<div class="center"><h2>📣 Resultaat van de stemming</h2><div class="role-reveal"><span class="icon">🤝</span><strong>Niemand sterft</strong><div class="muted" style="margin-top:8px">${escapeHtml(result.message)}</div></div><button id="goToNightBtn" class="success" style="width:100%">Ga naar de nacht</button></div>`;
+        phasePanel.innerHTML = `<div class="center"><h2>📣 Resultaat van de stemming</h2><div class="role-reveal"><span class="icon">🤝</span><strong>Niemand sterft</strong><div class="muted" style="margin-top:8px">${escapeHtml(result.message)}</div></div>${chameleonNotice}<button id="goToNightBtn" class="success" style="width:100%">Ga naar de nacht</button></div>`;
       } else {
         phasePanel.innerHTML = `
           <div class="center"><h2>📣 Resultaat van de stemming</h2><div class="result-name">${escapeHtml(result.name)}</div>
           <div class="role-reveal"><span class="icon">${result.roleIcon}</span><strong>${escapeHtml(result.roleLabel)}</strong><div class="muted" style="margin-top:6px">Kamp: ${escapeHtml(result.camp)}</div>${result.voteCount !== null && result.voteCount !== undefined ? `<div class="muted" style="margin-top:6px">${result.voteCount} stem(men)</div>` : ""}</div>
           ${(result.additionalDeaths || []).length ? `<div class="alert danger"><strong>Ook gestorven:</strong><br>${result.additionalDeaths.map(death => `${escapeHtml(death.name)} — ${death.roleIcon} ${escapeHtml(death.roleLabel)} (${escapeHtml(death.reason)})`).join("<br>")}</div>` : ""}
+          ${chameleonNotice}
           ${result.jesterWin ? `<div class="alert neutral"><strong>🃏 De Jester wint!</strong><br>${escapeHtml(result.name)} werd overdag uit het dorp gestemd.</div><button id="showJesterWinBtn" class="warning" style="width:100%">Toon einde</button>` : `<button id="goToNightBtn" class="success" style="width:100%">Ga naar de nacht</button>`}
           </div>`;
       }
@@ -396,6 +471,7 @@ function beginDayDeath(id, reason, voteCount = null) {
       const go = $("goToNightBtn");
       if (go) go.addEventListener("click", () => {
         state.dayResult = null;
+        state.chameleonRevealPending = [];
         const winner = checkWinner();
         if (winner) {
           state.winner = winner;
@@ -408,7 +484,7 @@ function beginDayDeath(id, reason, voteCount = null) {
         prepareNight();
       });
       const jester = $("showJesterWinBtn");
-      if (jester) jester.addEventListener("click", () => { state.dayResult = null; state.phase = "finished"; renderGame(); });
+      if (jester) jester.addEventListener("click", () => { state.dayResult = null; state.chameleonRevealPending = []; state.phase = "finished"; renderGame(); });
     }
 
     function renderMayorSuccessor() {

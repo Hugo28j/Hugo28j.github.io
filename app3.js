@@ -76,6 +76,50 @@ function oilTargetsFor(pyromaniacId) {
       });
     }
 
+    function renderChameleonAction(action) {
+      const ids = Array.isArray(action.actorIds) ? action.actorIds : (action.actorId ? [action.actorId] : []);
+      let index = Number.isInteger(action.chameleonIndex) ? action.chameleonIndex : 0;
+
+      while (index < ids.length) {
+        const candidate = getPlayer(ids[index]);
+        if (candidate && candidate.alive && candidate.role === "chameleon" && !candidate.chameleonChoice) break;
+        index += 1;
+      }
+
+      action.chameleonIndex = index;
+      if (index >= ids.length || state.day !== 2) return advanceNightAction();
+
+      const actor = getPlayer(ids[index]);
+      const allAwake = ids.map(getPlayer).filter(player => player && player.alive && player.role === "chameleon" && !player.chameleonChoice);
+
+      function finishThisChameleon(choice) {
+        actor.chameleonChoice = choice;
+        if (choice === "wolves") {
+          addLog(`${actor.name} koos in nacht 2 in het geheim de kant van de Weerwolven.`);
+          maybePromoteWolfChameleons();
+        } else {
+          addLog(`${actor.name} koos in nacht 2 om bij het Dorp te blijven.`);
+        }
+        action.chameleonIndex = index + 1;
+        save();
+        renderGame();
+      }
+
+      phasePanel.innerHTML = `
+        <h2>🦎 Kameleons worden wakker</h2>
+        <div class="alert"><strong>Wakker:</strong> ${allAwake.map(player => escapeHtml(player.name)).join(", ")}</div>
+        <div class="alert warning"><strong>Keuze voor ${escapeHtml(actor.name)}</strong></div>
+        <p class="step">De Kameleon kiest alleen tijdens nacht 2: bij het Dorp blijven of in het geheim de kant van de Weerwolven kiezen.</p>
+        <p class="muted">Bij een keuze voor de Weerwolven krijgt de Kameleon hun kamp, maar ziet hij niet wie de Weerwolven zijn en de Weerwolven krijgen niet te zien wie de Kameleon is. De rol blijft voorlopig Kameleon.</p>
+        <div class="actions">
+          <button id="chameleonVillageBtn" class="success">Bij het Dorp blijven</button>
+          <button id="chameleonWolvesBtn" class="danger">Kant van de Weerwolven kiezen</button>
+        </div>`;
+
+      $("chameleonVillageBtn").addEventListener("click", () => finishThisChameleon("village"));
+      $("chameleonWolvesBtn").addEventListener("click", () => finishThisChameleon("wolves"));
+    }
+
     function renderWolvesAction() {
       const wolves = livingWolves();
       if (!wolves.length) return advanceNightAction();
@@ -273,12 +317,19 @@ function oilTargetsFor(pyromaniacId) {
     }
 
     function convertToVampire(target) {
+      const formerRole = target.role;
+      target.preVampireRole = formerRole;
+      target.preVampireCampKey = effectiveCamp(target);
       target.role = "vampire";
       target.forcedCampKey = null;
       target.vampireOrder = state.nextVampireOrder++;
       target.convertedNight = state.day;
       target.coupPendingNight = null;
       target.wasConvertedToVampire = true;
+
+      // Als hierdoor de laatste echte Weerwolf verdwijnt, wordt een Kameleon
+      // die eerder voor de Weerwolven koos vanaf nu zelf een echte Weerwolf.
+      if (formerRole === "wolf") maybePromoteWolfChameleons();
     }
 
     function renderVampiresAction() {
