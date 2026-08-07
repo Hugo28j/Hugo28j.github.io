@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090d18">
+  <title>Weerwolven – Verteller</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <h1>🌕 Weerwolven</h1>
+        <p class="subtitle">Vertellersapp</p>
+      </div>
+      <div class="header-actions">
+        <button id="undoBtn" class="secondary small hidden">← Terug</button>
+        <button id="newGameBtn" class="danger small">Nieuw spel</button>
+      </div>
+    </header>
+
+    <section id="setupScreen">
+      <div class="panel focus">
+        <h2>1. Kies de vertellersmodus</h2>
+        <div class="mode-grid">
+          <label class="mode-card">
+            <div class="mode-title"><input type="radio" name="narratorMode" value="normal"> Normaal</div>
+            <div class="mode-description">Alleen levende, actieve rollen worden tijdens de nacht getoond, zoals in de huidige versie.</div>
+          </label>
+
+          <label class="mode-card">
+            <div class="mode-title"><input type="radio" name="narratorMode" value="hideDead"> Dode rollen verbergen</div>
+            <div class="mode-description">Een rol die bij de start aanwezig was, blijft ’s nachts opgeroepen worden wanneer niemand met die rol nog kan handelen. Je krijgt alleen de tekst en een knop Volgende.</div>
+          </label>
+
+          <label class="mode-card">
+            <div class="mode-title"><input type="radio" name="narratorMode" value="customGhost"> Zelf gekozen schijnrollen</div>
+            <div class="mode-description">Echte nachtrollen verschijnen normaal. Daarnaast kies je zelf welke afwezige of uitgeschakelde rollen toch iedere toepasselijke nacht worden opgeroepen.</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>2. Spelers instellen</h2>
+        <p class="muted">Voeg de deelnemers toe. Je kunt rollen handmatig geven of ze daarna willekeurig verdelen.</p>
+
+        <div class="form-grid">
+          <div>
+            <label for="playerName">Naam</label>
+            <input id="playerName" autocomplete="off" placeholder="Naam speler">
+          </div>
+
+          <div>
+            <label for="playerRole">Handmatige rol</label>
+            <select id="playerRole">
+              <option value="villager">👤 Burger</option>
+              <option value="doppelganger">🪞 Dubbelganger</option>
+              <option value="cupid">💘 Cupido</option>
+              <option value="wolf">🐺 Weerwolf</option>
+              <option value="imposter">🎭 Imposter</option>
+              <option value="vampire">🧛 Vampier</option>
+              <option value="vampireHunter">🗡️ Vampierenjager</option>
+              <option value="hunter">🔫 Jager</option>
+              <option value="seer">🔮 Ziener</option>
+              <option value="detective">🕵️ Detective</option>
+              <option value="guard">🛡️ Guard</option>
+              <option value="witch">🧪 Heks</option>
+              <option value="pyromaniac">🔥 Pyromaan</option>
+              <option value="dictator">🎖️ Dictator</option>
+              <option value="knower">🧠 Betweter</option>
+              <option value="survivor">🏕️ Survivor</option>
+              <option value="jester">🃏 Jester</option>
+            </select>
+          </div>
+
+          <button id="addPlayerBtn">Toevoegen</button>
+        </div>
+
+        <div id="setupPlayerList" class="player-list"></div>
+      </div>
+
+      <div class="panel">
+        <h2>3. Rollenpool en randomizer</h2>
+        <p class="muted">Geef aan hoeveel kaarten van elke rol in de pool zitten. De pool mag groter zijn dan het aantal spelers; ongebruikte kaarten blijven gewoon over.</p>
+        <div id="rolePoolGrid" class="role-pool-grid"></div>
+        <div id="rolePoolSummary" class="pool-summary"></div>
+        <div class="actions">
+          <button id="randomizeRolesBtn">🎲 Rollen willekeurig verdelen</button>
+          <button id="copyCurrentRolesBtn" class="secondary">Huidige verdeling als pool</button>
+          <button id="clearRolePoolBtn" class="ghost">Aantallen wissen</button>
+        </div>
+      </div>
+
+      <div id="alwaysShownPanel" class="panel hidden">
+        <h2>4. Welke schijnrollen oproepen?</h2>
+        <p class="muted">Deze nachtrollen worden ook getoond wanneer ze niet in het spel zitten of niemand ermee kan handelen. Rollen die echt actief zijn blijven altijd normaal verschijnen.</p>
+        <div id="alwaysShownRolesGrid" class="role-toggle-grid"></div>
+        <div class="actions">
+          <button id="selectAllShownBtn" class="secondary">Alles selecteren</button>
+          <button id="clearShownBtn" class="ghost">Niets selecteren</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="actions" style="margin-top:0">
+          <button id="startGameBtn" class="success">Spel starten</button>
+          <button id="resumeGameBtn" class="secondary hidden">Spel hervatten</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="hidden">
+      <div id="topStatus" class="top-status"></div>
+      <div id="phasePanel" class="panel focus"></div>
+
+      <details>
+        <summary>👥 Spelers, rollen en krachten bekijken</summary>
+        <div id="playersOverview" class="details-body"></div>
+      </details>
+
+      <details>
+        <summary>📜 Spelverloop bekijken</summary>
+        <div class="details-body">
+          <div id="gameLog" class="log"></div>
+        </div>
+      </details>
+    </section>
+
+    <div class="footer">Het lopende spel wordt automatisch op dit toestel opgeslagen.</div>
+  </main>
+
+  <script src="app1.js"></script>
+<script src="app2.js"></script>
+<script src="app3.js"></script>
+<script src="app4.js"></script>
+<script src="app5.js"></script>
+</body>
+</html>
