@@ -1,11 +1,11 @@
 "use strict";
 
-    const STORAGE_KEY = "weerwolven_verteller_v11";
-    const HISTORY_KEY = "weerwolven_verteller_v11_history";
+    const STORAGE_KEY = "weerwolven_verteller_v12";
+    const HISTORY_KEY = "weerwolven_verteller_v12_history";
 
     const ROLES = {
       villager: { label: "Burger", icon: "👤", camp: "Dorp", campKey: "village", campClass: "village" },
-      doppelganger: { label: "Dubbelganger", icon: "🪞", camp: "Dubbelganger", campKey: "doppelganger", campClass: "neutral" },
+      thief: { label: "Dief", icon: "🥷", camp: "Geen kamp", campKey: "thief", campClass: "neutral" },
       cupid: { label: "Cupido", icon: "💘", camp: "Dorp", campKey: "village", campClass: "village" },
       chameleon: { label: "Kameleon", icon: "🦎", camp: "Dorp", campKey: "village", campClass: "village" },
       wolf: { label: "Weerwolf", icon: "🐺", camp: "Weerwolven", campKey: "wolves", campClass: "wolf" },
@@ -26,13 +26,13 @@
 
 
     const NIGHT_ACTION_ORDER = [
-      "doppelganger", "cupid", "survivor", "seer", "detective", "guard",
+      "thief", "cupid", "survivor", "seer", "detective", "guard",
       "vampireHunter", "pyromaniac", "dictator", "chameleon", "wolves", "witch",
       "imposter", "knower", "vampires"
     ];
 
     const NIGHT_ACTION_ROLE_KEY = {
-      doppelganger: "doppelganger",
+      thief: "thief",
       cupid: "cupid",
       survivor: "survivor",
       seer: "seer",
@@ -50,7 +50,7 @@
     };
 
     const NIGHT_ACTION_META = {
-      doppelganger: { icon: "🪞", label: "Dubbelganger", call: "Dubbelganger, word wakker. Bekijk tijdens de eerste nacht de rol van één andere speler en neem die rol over." },
+      thief: { icon: "🥷", label: "Dief", call: "Dief, word wakker. Kies tijdens de eerste nacht één andere speler en bekijk diens rol. Je steelt die rol pas wanneer die gekozen speler later sterft." },
       cupid: { icon: "💘", label: "Cupido", call: "Cupido, word wakker. Kies tijdens de eerste nacht twee spelers die verliefd worden." },
       survivor: { icon: "🏕️", label: "Survivor", call: "Survivor, word wakker. Kies of je jouw eenmalige schuilplaats deze nacht gebruikt." },
       seer: { icon: "🔮", label: "Ziener", call: "Ziener, word wakker en kies één speler van wie je de rol wilt bekijken." },
@@ -337,7 +337,7 @@
     }
 
     function neutralSpectators(player) {
-      return effectiveCamp(player) === "survivor" || effectiveCamp(player) === "jester";
+      return effectiveCamp(player) === "survivor" || effectiveCamp(player) === "jester" || effectiveCamp(player) === "thief";
     }
 
     function checkWinner() {
@@ -358,11 +358,13 @@
       const noOtherHostiles = coupleCount === 0 && pyroCount === 0;
       if (villageCount > 0 && wolfCount === 0 && vampireCount === 0 && noOtherHostiles) return "village";
 
-      if (wolfCount > 0 && vampireCount === 0 && noOtherHostiles && wolfCount >= living.length - wolfCount) {
+      const competitiveLivingCount = living.filter(player => effectiveCamp(player) !== "thief").length;
+
+      if (wolfCount > 0 && vampireCount === 0 && noOtherHostiles && wolfCount >= competitiveLivingCount - wolfCount) {
         return "wolves";
       }
 
-      if (vampireCount > 0 && wolfCount === 0 && noOtherHostiles && vampireCount >= living.length - vampireCount) {
+      if (vampireCount > 0 && wolfCount === 0 && noOtherHostiles && vampireCount >= competitiveLivingCount - vampireCount) {
         return "vampires";
       }
 
@@ -423,7 +425,7 @@
       alwaysShownRolesGrid.innerHTML = NIGHT_ACTION_ORDER.map(actionType => {
         const meta = NIGHT_ACTION_META[actionType];
         const checked = state.alwaysShownRoles.includes(actionType) ? "checked" : "";
-        const timing = actionType === "doppelganger" || actionType === "cupid"
+        const timing = actionType === "thief" || actionType === "cupid"
           ? "alleen nacht 1"
           : actionType === "vampires" ? "alleen nacht 1, 3, 5, …" : "iedere nacht";
         return `
@@ -574,7 +576,7 @@
         .map(lover => escapeHtml(lover.name));
 
       const relationBadges = `
-        ${player.wasDoppelganger ? `<span class="pill neutral">🪞 Gekopieerde rol</span>` : ""}
+        ${player.role === "thief" && player.thiefTargetId ? `<span class="pill neutral">🥷 Doelwit gekozen</span>` : ""}
         ${loverNames.length ? `<span class="pill neutral">❤️ ${loverNames.join(", ")}</span>` : ""}
         ${player.forcedCampKey === "couple" ? `<span class="pill neutral">Kamp Koppel</span>` : ""}
       `;
@@ -603,8 +605,10 @@
         return `${relationBadges}<span class="pill neutral">🛢️ ${count} geolied</span>`;
       }
 
-      if (player.role === "dictator" && player.coupPendingNight === state.day) {
-        return `${relationBadges}<span class="pill warning">Coup gepland</span>`;
+      if (player.role === "dictator") {
+        if (player.coupPendingNight === state.day) return `${relationBadges}<span class="pill warning">Coup gepland</span>`;
+        if (player.coupUsed) return `${relationBadges}<span class="pill used">Coup gebruikt</span>`;
+        return `${relationBadges}<span class="pill village">Coup beschikbaar</span>`;
       }
 
       if (player.role === "vampire") {

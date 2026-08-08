@@ -54,20 +54,36 @@ function oilTargetsFor(pyromaniacId) {
 
     function renderDictatorAction(action) {
       const actor = getPlayer(action.actorId);
-      if (!actor || !actor.alive) return advanceNightAction();
+      if (!actor || !actor.alive || actor.role !== "dictator") return advanceNightAction();
+
+      // De coup kan maar één keer per Dictator gebruikt worden. Na gebruik blijft de
+      // nachtelijke oproep bewust bestaan zodat andere spelers niet weten dat de kracht op is.
+      if (actor.coupUsed) {
+        phasePanel.innerHTML = `
+          <h2>🎖️ Dictator wordt wakker</h2>
+          <div class="alert ghost-step">
+            <strong>Wat je als verteller zegt:</strong><br>
+            “Dictator, word wakker en kies of je voor de volgende ochtend een staatsgreep plant.”
+          </div>
+          <p class="step">De eenmalige coup van deze Dictator is al gebruikt. Vul niets in en wacht even alsof de Dictator nog een keuze maakt.</p>
+          <div class="actions"><button id="dictatorUsedNextBtn" class="secondary">Volgende</button></div>`;
+        $("dictatorUsedNextBtn").addEventListener("click", advanceNightAction);
+        return;
+      }
 
       phasePanel.innerHTML = `
         <h2>🎖️ Dictator wordt wakker</h2>
-        <div class="alert"><strong>${escapeHtml(actor.name)}</strong> mag beslissen om morgenochtend een staatsgreep uit te voeren.</div>
-        <p class="muted">Bij een coup kiest de Dictator in de ochtend zelf één speler die sterft.</p>
+        <div class="alert"><strong>${escapeHtml(actor.name)}</strong> mag beslissen om morgenochtend zijn <strong>eenmalige</strong> staatsgreep uit te voeren.</div>
+        <p class="muted">Zodra de Dictator Ja kiest, is zijn coup voor de rest van dit spel opgebruikt — ook als hij later diezelfde nacht sterft.</p>
         <div class="actions">
           <button id="dictatorCoupYesBtn" class="danger">Ja, coup plannen</button>
           <button id="dictatorCoupNoBtn" class="secondary">Nee, niets doen</button>
         </div>`;
 
       $("dictatorCoupYesBtn").addEventListener("click", () => {
+        actor.coupUsed = true;
         actor.coupPendingNight = state.day;
-        addLog(`${actor.name} plande een staatsgreep voor de ochtend.`);
+        addLog(`${actor.name} gebruikte zijn eenmalige coup en plande een staatsgreep voor de ochtend.`);
         advanceNightAction();
       });
       $("dictatorCoupNoBtn").addEventListener("click", () => {
@@ -322,6 +338,8 @@ function oilTargetsFor(pyromaniacId) {
       target.preVampireCampKey = effectiveCamp(target);
       target.role = "vampire";
       target.forcedCampKey = null;
+      target.thiefTargetId = null;
+      target.thiefUsed = true;
       target.vampireOrder = state.nextVampireOrder++;
       target.convertedNight = state.day;
       target.coupPendingNight = null;

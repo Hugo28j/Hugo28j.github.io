@@ -37,11 +37,59 @@ function beginDayDeath(id, reason, voteCount = null) {
       return state.nightResolutionActive && isProtectedTonight(id);
     }
 
+    function resetStolenRoleResources(thief, stolenRole) {
+      const keepCoupleCamp = thief.forcedCampKey === "couple";
+
+      thief.role = stolenRole;
+      if (!keepCoupleCamp) thief.forcedCampKey = null;
+
+      // De gestolen rol start met zijn eigen persoonlijke krachten opnieuw vers.
+      thief.hunterUsed = false;
+      thief.hideUsed = false;
+      thief.lifePotionUsed = false;
+      thief.deathPotionUsed = false;
+      thief.lastProtectedId = null;
+      thief.cupidUsed = false;
+      thief.coupPendingNight = null;
+      thief.coupUsed = false;
+      thief.chameleonChoice = null;
+      thief.chameleonRevealed = false;
+      thief.wasConvertedToVampire = false;
+      thief.preVampireRole = null;
+      thief.preVampireCampKey = null;
+      thief.vampireOrder = null;
+      thief.convertedNight = null;
+
+      // De Dief krijgt nooit een tweede eerste-nachtkeuze wanneer hij later de rol Dief steelt.
+      thief.thiefUsed = true;
+      thief.thiefTargetId = null;
+
+      if (stolenRole === "vampire") {
+        thief.vampireOrder = state.nextVampireOrder++;
+        thief.convertedNight = state.day;
+      }
+    }
+
+    function resolveThievesForDeadTarget(deadPlayer, stolenRole) {
+      const thieves = state.players.filter(player =>
+        player.alive &&
+        player.role === "thief" &&
+        player.thiefTargetId === deadPlayer.id
+      );
+
+      thieves.forEach(thief => {
+        const role = ROLES[stolenRole];
+        resetStolenRoleResources(thief, stolenRole);
+        addLog(`${thief.name} stal na de dood van ${deadPlayer.name} de rol ${role.label}. Alle persoonlijke krachten van die rol zijn opnieuw vers beschikbaar, voor zover de timing van de rol nog toelaat dat ze gebruikt worden.`);
+      });
+    }
+
     function killPlayer(id, reason, options = {}) {
       const player = getPlayer(id);
       if (!player || !player.alive) return;
 
       const wasMayor = player.mayor;
+      const stolenRole = player.role;
       player.alive = false;
       player.mayor = false;
       addLog(`${player.name} stierf: ${reason}.`);
@@ -68,6 +116,9 @@ function beginDayDeath(id, reason, voteCount = null) {
           state.dayResult.additionalDeaths.push({ id: player.id, name: player.name, roleLabel: role.label, roleIcon: role.icon, camp: campLabel(player), reason });
         }
       }
+
+      // Een levende Dief die precies deze speler koos, steelt nu pas diens actuele rol.
+      resolveThievesForDeadTarget(player, stolenRole);
 
       const livingLovers = (player.loverIds || []).map(getPlayer).filter(lover => lover && lover.alive);
       livingLovers.reverse().forEach(lover => {
@@ -96,6 +147,10 @@ function beginDayDeath(id, reason, voteCount = null) {
             const player = getPlayer(death.id);
             if (!player || !player.alive) continue;
 
+            if (death.reason === "werd door de weerwolven opgegeten" && player.role === "pyromaniac") {
+              addLog(`${player.name} overleefde de weerwolfaanval omdat de speler op dat moment Pyromaan was.`);
+              continue;
+            }
             if (!death.ignoreProtection && isNightImmune(player.id)) {
               addLog(`${player.name} overleefde ${death.reason}, dankzij ${protectionDescription(player.id)}.`);
               continue;
@@ -152,6 +207,10 @@ function beginDayDeath(id, reason, voteCount = null) {
           const death = state.deathQueue.shift();
           const player = getPlayer(death.id);
           if (!player || !player.alive) continue;
+          if (death.reason === "werd door de weerwolven opgegeten" && player.role === "pyromaniac") {
+            addLog(`${player.name} overleefde de weerwolfaanval omdat de speler op dat moment Pyromaan was.`);
+            continue;
+          }
           if (!death.ignoreProtection && isNightImmune(player.id)) {
             addLog(`${player.name} overleefde ${death.reason}, dankzij ${protectionDescription(player.id)}.`);
             continue;
@@ -533,9 +592,17 @@ function beginDayDeath(id, reason, voteCount = null) {
     }
 
     function renderFinished() {
+      const losingThieves = livingByRole("thief").filter(thief => {
+        const target = thief.thiefTargetId ? getPlayer(thief.thiefTargetId) : null;
+        return !target || target.alive;
+      });
+      const thiefLossHtml = losingThieves.length
+        ? `<div class="alert neutral"><strong>🥷 Dief verliest:</strong> ${losingThieves.map(player => escapeHtml(player.name)).join(", ")} ${losingThieves.length === 1 ? "heeft" : "hebben"} de gekozen speler niet vóór het einde zien sterven en heeft dus geen rol/kamp kunnen stelen.</div>`
+        : "";
+
       if (state.winner === "jester") {
         const winners = state.winnerIds.map(getPlayer).filter(Boolean);
-        phasePanel.innerHTML = `<div class="center"><h2>🃏 De Jester wint</h2><div class="alert neutral">${winners.length ? winners.map(player => escapeHtml(player.name)).join(", ") : "Een Jester"} werd overdag uit het dorp gestemd.</div><button id="finishedNewGameBtn">Nieuw spel starten</button></div>`;
+        phasePanel.innerHTML = `<div class="center"><h2>🃏 De Jester wint</h2><div class="alert neutral">${winners.length ? winners.map(player => escapeHtml(player.name)).join(", ") : "Een Jester"} werd overdag uit het dorp gestemd.</div>${thiefLossHtml}<button id="finishedNewGameBtn">Nieuw spel starten</button></div>`;
       } else {
         const survivors = livingByRole("survivor").filter(player => effectiveCamp(player) === "survivor");
         const titles = {
@@ -556,6 +623,7 @@ function beginDayDeath(id, reason, voteCount = null) {
           <div class="center"><h2>${titles[state.winner] || "🏆 Spel afgelopen"}</h2>
           <div class="alert ${state.winner === "village" ? "success" : state.winner === "wolves" || state.winner === "vampires" ? "danger" : "neutral"}">${messages[state.winner] || "Het spel is afgelopen."}</div>
           ${survivors.length ? `<div class="alert neutral"><strong>Survivor-overwinning:</strong> ${survivors.map(player => escapeHtml(player.name)).join(", ")}</div>` : ""}
+          ${thiefLossHtml}
           <button id="finishedNewGameBtn">Nieuw spel starten</button></div>`;
       }
       $("finishedNewGameBtn").addEventListener("click", resetGame);

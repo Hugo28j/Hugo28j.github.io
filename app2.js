@@ -46,7 +46,7 @@ function renderPlayersOverview() {
     }
 
     function nightActionAppliesTonight(actionType) {
-      if (actionType === "doppelganger" || actionType === "cupid") return state.day === 1;
+      if (actionType === "thief" || actionType === "cupid") return state.day === 1;
       if (actionType === "chameleon") return state.day === 2;
       if (actionType === "vampires") return state.day % 2 === 1;
       return true;
@@ -110,8 +110,8 @@ function renderPlayersOverview() {
       const queue = [];
 
       if (state.day === 1) {
-        livingByRole("doppelganger").filter(player => !player.doppelgangerUsed)
-          .forEach(player => queue.push({ type: "doppelganger", actorId: player.id }));
+        livingByRole("thief").filter(player => !player.thiefUsed)
+          .forEach(player => queue.push({ type: "thief", actorId: player.id }));
 
         const cupids = livingByRole("cupid").filter(player => !player.cupidUsed);
         if (cupids.length) queue.push({ type: "cupid", actorIds: cupids.map(player => player.id) });
@@ -155,12 +155,6 @@ function renderPlayersOverview() {
       return addNarratorPlaceholders(queue);
     }
 
-    function rebuildNightQueueAfterDoppelgangers() {
-      const completed = state.night.queue.slice(0, state.night.index);
-      const remaining = buildNightQueue().filter(action => queueActionType(action) !== "doppelganger");
-      state.night.queue = [...completed, ...remaining];
-      state.night.index = completed.length;
-    }
 
     function prepareNight() {
       const winner = checkWinner();
@@ -186,10 +180,6 @@ function renderPlayersOverview() {
       const completedAction = currentNightAction();
       state.night.index += 1;
 
-      if (completedAction && completedAction.type === "doppelganger") {
-        const nextAction = state.night.queue[state.night.index];
-        if (!nextAction || nextAction.type !== "doppelganger") rebuildNightQueueAfterDoppelgangers();
-      }
 
       state.phase = state.night.index >= state.night.queue.length ? "dawn" : "nightAction";
       save();
@@ -210,7 +200,7 @@ function renderPlayersOverview() {
       }
 
       const renderers = {
-        doppelganger: renderDoppelgangerAction,
+        thief: renderDiefAction,
         cupid: renderCupidAction,
         survivor: renderSurvivorAction,
         seer: renderSeerAction,
@@ -250,53 +240,45 @@ function renderPlayersOverview() {
       $("ghostNextBtn").addEventListener("click", advanceNightAction);
     }
 
-    function renderDoppelgangerAction(action) {
+    function renderDiefAction(action) {
       const actor = getPlayer(action.actorId);
-      if (!actor || !actor.alive || actor.doppelgangerUsed) return advanceNightAction();
+      if (!actor || !actor.alive || actor.thiefUsed || actor.role !== "thief") return advanceNightAction();
 
       const candidates = livingPlayers().filter(player => player.id !== actor.id);
       if (!candidates.length) {
-        actor.doppelgangerUsed = true;
+        actor.thiefUsed = true;
         return advanceNightAction();
       }
 
       phasePanel.innerHTML = `
-        <h2>🪞 Dubbelganger wordt wakker</h2>
+        <h2>🥷 Dief wordt wakker</h2>
         <div class="alert neutral"><strong>${escapeHtml(actor.name)}</strong> kiest tijdens de eerste nacht één andere speler.</div>
-        <p class="step">De Dubbelganger bekijkt die rol en verandert onmiddellijk in dezelfde rol en het basiskamp van die rol.</p>
-        <label for="doppelTarget">Wiens rol kopiëren?</label>
-        <select id="doppelTarget">${options(candidates)}</select>
-        <div id="doppelRevealArea"></div>
-        <div class="actions"><button id="copyRoleBtn">Rol bekijken en kopiëren</button></div>`;
+        <p class="step">De Dief bekijkt nu alleen de rol van die speler. Hij blijft zelf Dief en heeft nog geen kamp. Pas wanneer dit gekozen doelwit later sterft, steelt de Dief de rol die het doelwit op dat moment heeft.</p>
+        <label for="thiefTarget">Wiens rol bekijken en als doelwit vastleggen?</label>
+        <select id="thiefTarget">${options(candidates)}</select>
+        <div id="thiefRevealArea"></div>
+        <div class="actions"><button id="inspectRoleBtn">Rol bekijken</button></div>`;
 
-      $("copyRoleBtn").addEventListener("click", () => {
-        const targetId = $("doppelTarget").value;
+      $("inspectRoleBtn").addEventListener("click", () => {
+        const targetId = $("thiefTarget").value;
         if (!targetId) return alert("Kies eerst een speler.");
         const target = getPlayer(targetId);
-        const copiedRole = target.role;
-        const role = ROLES[copiedRole];
+        const role = ROLES[target.role];
 
-        actor.doppelgangerUsed = true;
-        actor.wasDoppelganger = true;
-        actor.copiedFromId = target.id;
-        actor.role = copiedRole;
-        actor.forcedCampKey = null;
-        if (copiedRole === "vampire" && !actor.vampireOrder) {
-          actor.vampireOrder = state.nextVampireOrder++;
-          actor.convertedNight = state.day;
-        }
+        actor.thiefUsed = true;
+        actor.thiefTargetId = target.id;
 
-        $("doppelRevealArea").innerHTML = `
+        $("thiefRevealArea").innerHTML = `
           <div class="role-reveal">
             <span class="icon">${role.icon}</span>
             <strong>${escapeHtml(target.name)} is ${role.label}</strong>
-            <div class="muted" style="margin-top:6px">${escapeHtml(actor.name)} is nu ook ${role.label} — kamp ${escapeHtml(campLabel(actor))}</div>
+            <div class="muted" style="margin-top:6px">${escapeHtml(actor.name)} blijft voorlopig Dief. De gestolen rol wordt pas actief wanneer ${escapeHtml(target.name)} later sterft.</div>
           </div>
-          <button id="hideDoppelResultBtn" class="success" style="width:100%">Rol verbergen en verdergaan</button>`;
-        $("copyRoleBtn").disabled = true;
-        $("doppelTarget").disabled = true;
-        addLog(`${actor.name} kopieerde de rol van ${target.name} en werd ${role.label}.`);
-        $("hideDoppelResultBtn").addEventListener("click", advanceNightAction);
+          <button id="hideThiefResultBtn" class="success" style="width:100%">Rol verbergen en verdergaan</button>`;
+        $("inspectRoleBtn").disabled = true;
+        $("thiefTarget").disabled = true;
+        addLog(`${actor.name} koos ${target.name} als doelwit van de Dief en bekeek diens rol (${role.label}).`);
+        $("hideThiefResultBtn").addEventListener("click", advanceNightAction);
       });
     }
 
