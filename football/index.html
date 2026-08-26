@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>European Club Rating Hub 2026/27</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><span class="badge">⚽ 2026/27 rating project</span><h1>European Club Rating Hub</h1><p>One global rating across domestic leagues and UEFA competitions. Final scores can be synchronized automatically.</p></div>
+  <div class="toolbar">
+    <span id="syncStatus" class="badge">Loading score data…</span>
+    <button id="refreshBtn" class="primary">Refresh results</button>
+    <button id="fullSyncBtn">Run full sync</button>
+    <button id="exportBtn">Export data</button>
+    <label class="button">Import data<input id="importFile" type="file" accept=".json" hidden></label>
+  </div>
+</header>
+<nav id="mainNav"></nav>
+<main id="panels"></main>
+<div id="clubOverlay" class="overlay" hidden></div>
+<footer>Ratings and manual overrides are stored in your browser. Automatic fixtures and final scores are refreshed through GitHub Actions.</footer>
+</div>
+<script src="config.js"></script>
+<script src="app-core.js"></script>
+<script src="app-ui.js"></script>
+</body>
+</html>
