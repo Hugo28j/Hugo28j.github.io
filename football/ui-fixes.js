@@ -114,3 +114,31 @@ refreshData=async function(notify=true){
   }
   return result;
 };
+
+// Apply the same delta colours to every domestic-league matchday standing.
+const __renderStandingRowsBeforeDeltaColors=renderStandingRows;
+renderStandingRows=function(c){
+  __renderStandingRowsBeforeDeltaColors(c);
+  const period=$(`#${c}-period`)?.value||"all";
+  if(period==="all")return;
+  document.querySelectorAll(`#${c}-body tr`).forEach(row=>{
+    const cell=row.children?.[4];
+    if(!cell)return;
+    const value=Number(String(cell.textContent||"").replace("+",""));
+    if(Number.isFinite(value))cell.classList.add(deltaClass(value));
+  });
+};
+
+// Apply the same delta colours to the weekly World Ranking.
+const __renderWorldRowsBeforeDeltaColors=renderWorldRows;
+renderWorldRows=function(){
+  __renderWorldRowsBeforeDeltaColors();
+  const period=$("#worldPeriod")?.value||"all";
+  if(period==="all")return;
+  document.querySelectorAll("#worldBody tr").forEach(row=>{
+    const cell=row.children?.[4];
+    if(!cell)return;
+    const value=Number(String(cell.textContent||"").replace("+",""));
+    if(Number.isFinite(value))cell.classList.add(deltaClass(value));
+  });
+};
