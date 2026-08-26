@@ -1,5 +1,5 @@
 // Runtime data-quality fixes for synced football fixtures.
-// Fixture IDs stay unchanged so manual/imported scores remain compatible.
+// Fixture IDs stay unchanged so manual/imported scores keep working.
 
 Object.assign(ALIASES,{
   "man utd":"Manchester United",
@@ -21,18 +21,11 @@ Object.assign(ALIASES,{
   "barcelona":"FC Barcelona",
   "atletico":"Atlético de Madrid",
   "atletico madrid":"Atlético de Madrid",
-  "club atletico de madrid":"Atlético de Madrid",
   "celta vigo":"RC Celta",
-  "rc celta de vigo":"RC Celta",
   "alaves":"Deportivo Alavés",
   "espanyol":"RCD Espanyol",
+  "rd espanyol":"RCD Espanyol",
   "rcd espanyol de barcelona":"RCD Espanyol",
-  "real madrid cf":"Real Madrid",
-  "real sociedad de futbol":"Real Sociedad",
-  "real racing club de santander":"Racing Santander",
-  "rayo vallecano de madrid":"Rayo Vallecano",
-  "rc deportivo la coruna":"RC Deportivo",
-  "real betis balompie":"Real Betis",
   "osasuna":"CA Osasuna",
   "deportivo la coruna":"RC Deportivo",
 
@@ -63,6 +56,9 @@ Object.assign(ALIASES,{
   "brest":"Stade Brestois 29",
   "auxerre":"AJ Auxerre",
   "nice":"OGC Nice",
+  "le havre":"Havre Athletic Club",
+  "le havre ac":"Havre Athletic Club",
+  "havre ac":"Havre Athletic Club",
 
   "twente":"FC Twente",
   "utrecht":"FC Utrecht",
@@ -76,7 +72,9 @@ Object.assign(ALIASES,{
   "benfica":"SL Benfica",
   "sporting lisbon":"Sporting CP",
   "braga":"SC Braga",
+  "gil vicente":"Gil Vicente FC",
   "vitoria guimaraes":"Vitória SC",
+  "vitoria de guimaraes":"Vitória SC",
   "famalicao":"FC Famalicão",
   "arouca":"FC Arouca",
 
@@ -89,8 +87,17 @@ Object.assign(ALIASES,{
   "atalanta bc":"Atalanta",
   "napoli":"Napoli",
 
+  "sint truidense":"STVV",
+  "sint truidense vv":"STVV",
+  "sint truiden":"STVV",
+  "st truiden":"STVV",
+  "stvv":"STVV",
   "union sg":"Royale Union Saint-Gilloise",
   "union saint gilloise":"Royale Union Saint-Gilloise",
+  "union st gilloise":"Royale Union Saint-Gilloise",
+  "union st gilloise":"Royale Union Saint-Gilloise",
+  "waasland beveren":"SK Beveren",
+  "cercle brugge ksv":"Cercle Brugge",
   "club bruges":"Club Brugge",
   "club brugge kv":"Club Brugge",
   "anderlecht":"RSC Anderlecht",
@@ -100,25 +107,11 @@ Object.assign(ALIASES,{
   "genk":"KRC Genk",
   "mechelen":"KV Mechelen",
   "standard liege":"Standard de Liège",
-  "sint truiden":"STVV",
-  "st truiden":"STVV",
   "westerlo":"KVC Westerlo",
   "zulte waregem":"SV Zulte Waregem",
   "charleroi":"Sporting Charleroi",
   "oud heverlee leuven":"OH Leuven"
 });
-
-// Identity matching must not rely on substring containment. A long name such as
-// "RCD Espanyol de Barcelona" contains "Barcelona", but that does not make it FC Barcelona.
-function safeNameSimilarity(a,b){
-  const aa=normalized(canonicalName(a)),bb=normalized(canonicalName(b));
-  if(!aa||!bb)return 0;
-  if(aa===bb)return 1;
-  const A=new Set(aa.split(" ").filter(Boolean)),B=new Set(bb.split(" ").filter(Boolean));
-  let inter=0;A.forEach(x=>B.has(x)&&inter++);
-  const union=new Set([...A,...B]).size;
-  return union?inter/union:0;
-}
 
 function resolveTrackedFixtureName(name,competition){
   if(tracked(name))return name;
@@ -133,111 +126,57 @@ function resolveTrackedFixtureName(name,competition){
   const exact=candidates.find(t=>normalized(t)===targetNorm);
   if(exact)return exact;
 
-  const ranked=candidates
-    .map(t=>({team:t,score:safeNameSimilarity(aliased,t)}))
-    .sort((a,b)=>b.score-a.score);
-  const best=ranked[0],second=ranked[1]||{score:0};
-  const threshold=domestic?.62:.78;
-  const margin=domestic?.12:.10;
-
-  // If two clubs are almost equally plausible, do not guess.
-  return best&&best.score>=threshold&&(best.score-second.score)>=margin?best.team:name;
-}
-
-// Old HTML backups also need strict two-sided matching when their fixture IDs
-// are migrated to the current ESPN/fallback fixture IDs.
-findNewFixture=function(oldId){
-  const p=String(oldId||"").split("|");if(p[0]!=="base")return null;
-  let c,date,round,home,away;
-  if(p.length>=6&&/^\d{4}-\d\d-\d\d$/.test(p[3])){
-    c=p[1];date=p[3];home=p[4];away=p.slice(5).join("|");
-  }else{
-    c=p[1];round=Number(p[2]);home=p[3];away=p.slice(4).join("|");
-  }
-  let best=null,bestScore=-1;
-  for(const f of FIXTURES.filter(x=>x.competition===c)){
-    if(date&&Math.abs((parseUTC(f.date)-parseUTC(date))/86400000)>1)continue;
-    if(round&&f.round&&Number(f.round)!==round)continue;
-    const hs=safeNameSimilarity(home,f.home),as=safeNameSimilarity(away,f.away);
-    if(hs<.70||as<.70)continue;
-    const score=(hs+as)/2;
-    if(score>bestScore){bestScore=score;best=f}
-  }
-  return bestScore>=.70?best:null;
-};
-
-function auditFixtureIntegrity(){
-  const unresolvedDomestic=[],pairMismatches=[],sameTeam=[],duplicateSourceEvents=[];
-  const sourceIds=new Map();
-
-  for(const f of FIXTURES){
-    if(COMP[f.competition]?.type!=="domestic")continue;
-    const leagueTeams=new Set(TEAMS_BY_LEAGUE[f.competition]||[]);
-
-    if(!leagueTeams.has(f.home))unresolvedDomestic.push(`${COMP[f.competition].name}: ${f.home}`);
-    if(!leagueTeams.has(f.away))unresolvedDomestic.push(`${COMP[f.competition].name}: ${f.away}`);
-    if(f.home===f.away)sameTeam.push(`${COMP[f.competition].name}: ${f.date} ${f.home}`);
-
-    if(f.syncedHome&&f.syncedAway){
-      const sourceHome=resolveTrackedFixtureName(f.syncedHome,f.competition);
-      const sourceAway=resolveTrackedFixtureName(f.syncedAway,f.competition);
-      if(sourceHome!==f.home||sourceAway!==f.away){
-        pairMismatches.push(
-          `${COMP[f.competition].name}: ${f.date} calendar ${f.home}–${f.away} / source ${f.syncedHome}–${f.syncedAway}`
-        );
-      }
-    }
-
-    if(f.sourceEventId){
-      const key=`${f.competition}|${f.sourceEventId}`;
-      const pair=`${f.home}|${f.away}|${f.date}`;
-      if(sourceIds.has(key)&&sourceIds.get(key)!==pair)duplicateSourceEvents.push(`${key}: ${sourceIds.get(key)} <> ${pair}`);
-      else sourceIds.set(key,pair);
-    }
+  let best=null,bestScore=0,secondScore=0;
+  for(const t of candidates){
+    const s=similarity(aliased,t);
+    if(s>bestScore){secondScore=bestScore;bestScore=s;best=t}
+    else if(s>secondScore)secondScore=s;
   }
 
-  return{
-    unresolvedDomestic:[...new Set(unresolvedDomestic)],
-    pairMismatches:[...new Set(pairMismatches)],
-    sameTeam:[...new Set(sameTeam)],
-    duplicateSourceEvents:[...new Set(duplicateSourceEvents)]
-  };
+  // Domestic data must be reasonably certain. If two candidates are too close,
+  // leave the original name untouched instead of guessing the wrong club.
+  const threshold=domestic?.72:.86;
+  const margin=domestic?.12:.08;
+  return best&&bestScore>=threshold&&(bestScore-secondScore>=margin||bestScore>=.98)?best:name;
 }
 
 const __loadFixturesWithOriginalNames=loadFixtures;
 loadFixtures=async function(){
   const info=await __loadFixturesWithOriginalNames();
   let fixedNames=0;
-  const unresolvedBeforeAudit=[];
+  const unresolvedDomestic=[];
+  const suspiciousMappings=[];
 
   FIXTURES=FIXTURES.map(f=>{
-    const home=resolveTrackedFixtureName(f.home,f.competition);
-    const away=resolveTrackedFixtureName(f.away,f.competition);
-    if(home!==f.home)fixedNames++;
-    if(away!==f.away)fixedNames++;
+    const originalHome=f.home,originalAway=f.away;
+    const home=resolveTrackedFixtureName(originalHome,f.competition);
+    const away=resolveTrackedFixtureName(originalAway,f.competition);
+    if(home!==originalHome)fixedNames++;
+    if(away!==originalAway)fixedNames++;
     const nf={...f,home,away};
 
     if(COMP[f.competition]?.type==="domestic"){
-      if(!(TEAMS_BY_LEAGUE[f.competition]||[]).includes(home))unresolvedBeforeAudit.push(`${COMP[f.competition].name}: ${f.home}`);
-      if(!(TEAMS_BY_LEAGUE[f.competition]||[]).includes(away))unresolvedBeforeAudit.push(`${COMP[f.competition].name}: ${f.away}`);
+      if(!tracked(home))unresolvedDomestic.push(`${COMP[f.competition].name}: ${originalHome}`);
+      if(!tracked(away))unresolvedDomestic.push(`${COMP[f.competition].name}: ${originalAway}`);
+      if(home===away)suspiciousMappings.push(`${COMP[f.competition].name}: ${originalHome} vs ${originalAway} resolved to the same club`);
+
+      // New merged fixtures remember the original synced club names. Verify that
+      // source and calendar still resolve to the same two tracked teams.
+      if(f.syncedHome&&f.syncedAway){
+        const sh=resolveTrackedFixtureName(f.syncedHome,f.competition);
+        const sa=resolveTrackedFixtureName(f.syncedAway,f.competition);
+        if(tracked(sh)&&tracked(sa)&&(sh!==home||sa!==away)){
+          suspiciousMappings.push(`${COMP[f.competition].name}: calendar ${home} vs ${away}; source ${sh} vs ${sa}`);
+        }
+      }
     }
     return nf;
   });
 
-  const integrity=auditFixtureIntegrity();
-  const uniqueUnresolved=[...new Set([...unresolvedBeforeAudit,...integrity.unresolvedDomestic])];
-  window.FOOTBALL_NAME_DIAGNOSTICS={fixedNames,unresolvedDomestic:uniqueUnresolved};
-  window.FOOTBALL_DATA_INTEGRITY={...integrity,unresolvedDomestic:uniqueUnresolved};
-
-  if(uniqueUnresolved.length||integrity.pairMismatches.length||integrity.sameTeam.length||integrity.duplicateSourceEvents.length){
-    console.warn("Football fixture integrity warnings",window.FOOTBALL_DATA_INTEGRITY);
-  }else{
-    console.info("Football fixture integrity audit passed.");
-  }
-
-  return{
-    ...info,fixedNames,unresolvedDomestic:uniqueUnresolved,
-    pairMismatches:integrity.pairMismatches,
-    duplicateSourceEvents:integrity.duplicateSourceEvents
-  };
+  const uniqueUnresolved=[...new Set(unresolvedDomestic)];
+  const uniqueSuspicious=[...new Set(suspiciousMappings)];
+  window.FOOTBALL_NAME_DIAGNOSTICS={fixedNames,unresolvedDomestic:uniqueUnresolved,suspiciousMappings:uniqueSuspicious};
+  if(uniqueUnresolved.length)console.warn("Unresolved domestic club names",uniqueUnresolved);
+  if(uniqueSuspicious.length)console.warn("Suspicious fixture mappings",uniqueSuspicious);
+  return {...info,fixedNames,unresolvedDomestic:uniqueUnresolved,suspiciousMappings:uniqueSuspicious};
 };
