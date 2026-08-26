@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-26T17:51:28.860Z",
+  "generatedAt": "2026-08-26T18:11:27.737Z",
   "source": "ESPN public scoreboard endpoints (unofficial / undocumented)",
   "fullSync": true,
   "requests": 168,
@@ -10259,8 +10259,8 @@
       "stage": "",
       "completed": false,
       "postponed": false,
-      "statusName": "STATUS_HALFTIME",
-      "statusDescription": "Halftime",
+      "statusName": "STATUS_FIRST_HALF",
+      "statusDescription": "First Half",
       "statusState": "in",
       "homeScore": null,
       "awayScore": null,
