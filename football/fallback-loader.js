@@ -9,6 +9,17 @@ const OF_CALENDARS={
  seriea:"https://raw.githubusercontent.com/openfootball/italy/master/2026-27/1-seriea.txt"
 };
 const OF_NAMES={
+ laliga:{
+  "Club Atlético de Madrid":"Atlético de Madrid",
+  "Real Racing Club de Santander":"Racing Santander",
+  "Real Madrid CF":"Real Madrid",
+  "Real Sociedad de Fútbol":"Real Sociedad",
+  "RCD Espanyol de Barcelona":"RCD Espanyol",
+  "Rayo Vallecano de Madrid":"Rayo Vallecano",
+  "RC Deportivo La Coruña":"RC Deportivo",
+  "RC Celta de Vigo":"RC Celta",
+  "Real Betis Balompié":"Real Betis"
+ },
  bundesliga:{"SV 07 Elversberg":"SV Elversberg","TSG 1899 Hoffenheim":"TSG Hoffenheim"},
  ligue1:{"Racing Club de Lens":"RC Lens","Lille OSC":"LOSC Lille","Le Havre AC":"Havre Athletic Club","AS Monaco FC":"AS Monaco","Paris Saint-Germain FC":"Paris Saint-Germain","Stade Rennais FC 1901":"Stade Rennais FC","ES Troyes AC":"Estac Troyes"},
  eredivisie:{"AFC Ajax":"Ajax","FC Twente '65":"FC Twente","Feyenoord Rotterdam":"Feyenoord","NEC":"N.E.C. Nijmegen","SC Cambuur-Leeuwarden":"SC Cambuur","SC Heerenveen":"sc Heerenveen","SBV Excelsior":"Excelsior Rotterdam","Telstar 1963":"Telstar","Willem II Tilburg":"Willem II"},
@@ -37,8 +48,52 @@ function parseOpenFootball(txt,c){
  return[...unique.values()].map(f=>({...f,id:`fallback|${f.competition}|${f.round}|${f.home}|${f.away}`}));
 }
 function uefaFallback(){const out=[];for(const [c,arr] of Object.entries(window.UEFA_FALLBACK_FIXTURES||{}))(arr||[]).forEach((f,i)=>out.push({...f,stage:f.phase||f.stage||"UEFA",completed:false,source:"uefa-fallback",id:`fallback|${c}|${i}|${f.date}|${f.home}|${f.away}`}));return out}
-function fixtureMergeScore(a,b){if(a.competition!==b.competition)return-1;const dd=Math.abs((parseUTC(a.date)-parseUTC(b.date))/86400000);if(dd>2)return-1;return((similarity(a.home,b.home)+similarity(a.away,b.away))/2)-dd*.04}
-function mergeEspn(base,synced){const all=[...base];for(const s of synced||[]){let best=null,bs=0;for(const f of all){const v=fixtureMergeScore(f,s);if(v>bs){bs=v;best=f}}if(best&&bs>=.62){Object.assign(best,{kickoff:s.kickoff||best.kickoff,time:s.time||best.time,sourceEventId:s.sourceEventId||best.sourceEventId,sourceLeague:s.sourceLeague||best.sourceLeague,completed:!!s.completed,homeScore:s.homeScore,awayScore:s.awayScore,penaltyWinner:s.penaltyWinner||null,syncedStage:s.stage||null,source:"espn+fallback"})}else if(s?.competition&&s?.home&&s?.away&&s?.date){all.push({...s,id:`espn|${s.competition}|${s.sourceEventId||`${s.date}|${s.home}|${s.away}`}`,source:"espn"})}}return all.sort((a,b)=>(a.date||"").localeCompare(b.date||"")||(a.time||"").localeCompare(b.time||"")||a.id.localeCompare(b.id))}
+
+// A synced result may only be merged into a calendar fixture when BOTH clubs match.
+// This prevents one exact club plus one weak substring match from attaching a result
+// to the wrong fixture (for example Espanyol -> FC Barcelona).
+function fixtureMergeScore(a,b){
+ if(a.competition!==b.competition)return-1;
+ const dd=Math.abs((parseUTC(a.date)-parseUTC(b.date))/86400000);
+ if(dd>2)return-1;
+ const hs=similarity(a.home,b.home),as=similarity(a.away,b.away);
+ const domestic=COMP[a.competition]?.type==="domestic";
+ const minSide=domestic?.70:.78;
+ if(hs<minSide||as<minSide)return-1;
+ return((hs+as)/2)-dd*.04;
+}
+function mergeEspn(base,synced){
+ const all=[...base];
+ const sourceEventTargets=new Map();
+ for(const s of synced||[]){
+  let best=null,bs=-1;
+  for(const f of all){
+   const v=fixtureMergeScore(f,s);
+   if(v>bs){bs=v;best=f}
+  }
+  if(best&&bs>=.60){
+   const key=`${s.competition}|${s.sourceEventId||""}`;
+   const previous=sourceEventTargets.get(key);
+   if(previous&&previous!==best.id){
+    console.warn("Duplicate source event mapping blocked",key,previous,best.id);
+    continue;
+   }
+   sourceEventTargets.set(key,best.id);
+   Object.assign(best,{
+    kickoff:s.kickoff||best.kickoff,time:s.time||best.time,
+    sourceEventId:s.sourceEventId||best.sourceEventId,
+    sourceLeague:s.sourceLeague||best.sourceLeague,
+    completed:!!s.completed,homeScore:s.homeScore,awayScore:s.awayScore,
+    penaltyWinner:s.penaltyWinner||null,syncedStage:s.stage||null,
+    syncedHome:s.home,syncedAway:s.away,syncedDate:s.date,
+    source:"espn+fallback"
+   });
+  }else if(s?.competition&&s?.home&&s?.away&&s?.date){
+   all.push({...s,id:`espn|${s.competition}|${s.sourceEventId||`${s.date}|${s.home}|${s.away}`}`,syncedHome:s.home,syncedAway:s.away,syncedDate:s.date,source:"espn"});
+  }
+ }
+ return all.sort((a,b)=>(a.date||"").localeCompare(b.date||"")||(a.time||"").localeCompare(b.time||"")||a.id.localeCompare(b.id));
+}
 async function loadFixtures(){
  const base=uefaFallback();
  const domestic=await Promise.all(Object.entries(OF_CALENDARS).map(async([c,url])=>{try{const r=await fetch(`${url}?v=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(String(r.status));return parseOpenFootball(await r.text(),c)}catch(e){console.warn(`Fallback calendar failed for ${c}`,e);return[]}}));
