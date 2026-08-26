@@ -1,0 +1,50 @@
+name: Sync football results
+on:
+  push:
+    branches: [main]
+    paths:
+      - "football/index.html"
+      - "football/style.css"
+      - "football/config.js"
+      - "football/app-core.js"
+      - "football/app-ui*.js"
+      - "football/sync-results.mjs"
+      - ".github/workflows/sync-football-results.yml"
+  schedule:
+    - cron: "17 * * * *"
+    - cron: "41 3 * * *"
+  workflow_dispatch:
+    inputs:
+      full_sync:
+        description: "Recheck the complete 2026/27 season"
+        required: false
+        type: boolean
+        default: true
+permissions:
+  contents: write
+concurrency:
+  group: football-result-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Fetch fixtures and scores
+        env:
+          FULL_SYNC: ${{ github.event_name == 'push' || github.event.schedule == '41 3 * * *' || (github.event_name == 'workflow_dispatch' && inputs.full_sync) }}
+        run: node football/sync-results.mjs
+      - name: Commit changed match data
+        run: |
+          git config user.name "football-results-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add football/matches.json
+          if git diff --cached --quiet; then
+            echo "No match-data changes."
+          else
+            git commit -m "Update football fixtures and results"
+            git push
+          fi
