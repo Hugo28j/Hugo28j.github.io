@@ -1,1 +1,0 @@
-window.FALLBACK_BASE_FIXTURES=
