@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-27T21:07:54.342Z",
+  "generatedAt": "2026-08-27T21:22:46.856Z",
   "source": "ESPN scores + official UEFA qualifier pairing validation",
   "fullSync": true,
   "requests": 168,
@@ -10279,13 +10279,13 @@
       "away": "Athletic Club",
       "round": null,
       "stage": "",
-      "completed": false,
+      "completed": true,
       "postponed": false,
-      "statusName": "STATUS_SECOND_HALF",
-      "statusDescription": "Second Half",
-      "statusState": "in",
-      "homeScore": null,
-      "awayScore": null,
+      "statusName": "STATUS_FULL_TIME",
+      "statusDescription": "Full Time",
+      "statusState": "post",
+      "homeScore": 2,
+      "awayScore": 0,
       "penaltyWinner": null
     },
     {
@@ -10366,7 +10366,7 @@
       "statusState": "post",
       "homeScore": 0,
       "awayScore": 0,
-      "penaltyWinner": null
+      "penaltyWinner": "away"
     },
     {
       "competition": "uecl",
