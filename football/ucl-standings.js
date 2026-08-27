@@ -12,6 +12,16 @@
   const PHASE_START="2026-09-08",PHASE_END="2027-01-27";
   window.UCL_LEAGUE_PHASE_TEAMS=UCL_LEAGUE_PHASE_TEAMS;
 
+  // The generic UEFA Teams tab normally derives its clubs from loaded fixtures.
+  // League-phase fixtures may not exist yet, so directly qualified clubs would
+  // otherwise be missing and their starting rating could not be viewed/edited.
+  const relevantTeamsBeforeUclParticipants=relevantTeams;
+  relevantTeams=function(c){
+    const teams=relevantTeamsBeforeUclParticipants(c);
+    if(c!=="ucl")return teams;
+    return [...new Set([...UCL_LEAGUE_PHASE_TEAMS,...teams])];
+  };
+
   function ensureUclStandingsUI(){
     const section=document.querySelector("#main-ucl");
     if(!section)return;
