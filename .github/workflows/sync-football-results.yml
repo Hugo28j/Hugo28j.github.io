@@ -9,6 +9,7 @@ on:
       - "football/app-core.js"
       - "football/app-ui*.js"
       - "football/sync-results.mjs"
+      - "football/recover-uefa-fixtures.mjs"
       - "football/uefa-integrity.js"
       - ".github/workflows/sync-football-results.yml"
   schedule:
@@ -38,6 +39,8 @@ jobs:
         env:
           FULL_SYNC: ${{ github.event_name == 'push' || github.event.schedule == '41 3 * * *' || (github.event_name == 'workflow_dispatch' && inputs.full_sync) }}
         run: node football/sync-results.mjs
+      - name: Recover valid UEFA fixtures rejected by name matching
+        run: node football/recover-uefa-fixtures.mjs
       - name: Commit changed match data
         run: |
           git config user.name "football-results-bot"
