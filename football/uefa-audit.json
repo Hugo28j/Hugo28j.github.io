@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-27T16:58:32.293Z",
+  "generatedAt": "2026-08-27T17:34:33.025Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -3691,7 +3691,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.europa_qual",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_HALFTIME"
       },
       {
         "sourceEventId": "401909627",
@@ -3702,7 +3702,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.europa_qual",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_HALFTIME"
       },
       {
         "sourceEventId": "401909828",
@@ -5471,11 +5471,11 @@
         "date": "2026-08-27",
         "home": "KuPS Kuopio",
         "away": "Shamrock Rovers",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa.conf_qual",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401909619",
@@ -5486,7 +5486,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.europa.conf_qual",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FIRST_HALF"
       },
       {
         "sourceEventId": "401910984",
@@ -5497,7 +5497,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.europa.conf_qual",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_HALFTIME"
       },
       {
         "sourceEventId": "401910968",
@@ -5508,7 +5508,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.europa.conf_qual",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_HALFTIME"
       },
       {
         "sourceEventId": "401909628",
@@ -5519,7 +5519,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.europa.conf_qual",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FIRST_HALF"
       },
       {
         "sourceEventId": "401910990",
@@ -5530,7 +5530,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.europa.conf_qual",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FIRST_HALF"
       },
       {
         "sourceEventId": "401910967",
