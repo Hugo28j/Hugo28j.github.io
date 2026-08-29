@@ -8,8 +8,24 @@ const addDaysISO=(s,n)=>{const d=parseUTC(s);d.setUTCDate(d.getUTCDate()+n);retu
 function niceDate(s){if(!s)return"";return new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"}).format(parseUTC(s))}
 function teamLeague(t){for(const [k,a] of Object.entries(TEAMS_BY_LEAGUE))if(a.includes(t))return k;return null}
 function tracked(t){return ALL_TRACKED.includes(t)}
-function defaultState(){return{starts:clone(DEFAULT_STARTS),otherRatings:{},scores:{},penalties:{},customFixtures:[],settings:clone(DEFAULT_SETTINGS)}}
-function loadState(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY));if(!x)return defaultState();const d=defaultState();return{starts:Object.assign(d.starts,x.starts||{}),otherRatings:Object.assign({},x.otherRatings||{}),scores:Object.assign({},x.scores||{}),penalties:Object.assign({},x.penalties||{}),customFixtures:Array.isArray(x.customFixtures)?x.customFixtures:[],settings:Object.assign(d.settings,x.settings||{})}}catch{return defaultState()}}
+function defaultState(){return{officialDataVersion:OFFICIAL_DATA_VERSION,starts:clone(DEFAULT_STARTS),otherRatings:clone(DEFAULT_OTHER_RATINGS),scores:{},penalties:{},customFixtures:[],settings:clone(DEFAULT_SETTINGS)}}
+function loadState(){
+  try{
+    const x=JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if(!x)return defaultState();
+    const d=defaultState();
+    const applyOfficial=Number(x.officialDataVersion||0)<OFFICIAL_DATA_VERSION;
+    return{
+      officialDataVersion:OFFICIAL_DATA_VERSION,
+      starts:applyOfficial?clone(d.starts):Object.assign(d.starts,x.starts||{}),
+      otherRatings:applyOfficial?clone(d.otherRatings):Object.assign(d.otherRatings,x.otherRatings||{}),
+      scores:Object.assign({},x.scores||{}),
+      penalties:Object.assign({},x.penalties||{}),
+      customFixtures:Array.isArray(x.customFixtures)?x.customFixtures:[],
+      settings:applyOfficial?clone(d.settings):Object.assign(d.settings,x.settings||{})
+    };
+  }catch{return defaultState()}
+}
 let state=loadState();
 const save=()=>localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
 function compFactor(c){return Number(state.settings["factor_"+c]??1)}
@@ -40,4 +56,24 @@ function relevantTeams(c){if(COMP[c].type==="domestic")return TEAMS_BY_LEAGUE[c]
 function playedGames(team,cutoff=null){const c=recalc(cutoff);return chronological().filter(f=>(f.home===team||f.away===team)&&(!cutoff||f.date<=cutoff)&&scoreValue(f)&&c.details[f.id]).map(f=>({f,d:c.details[f.id],s:scoreValue(f)}))}
 async function loadFixtures(){const r=await fetch(`matches.json?v=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(`matches.json ${r.status}`);const d=await r.json();FIXTURES=(d.fixtures||[]).map(x=>({...x,id:`espn|${x.competition}|${x.sourceEventId}`}));return d}
 function findNewFixture(oldId){const p=oldId.split("|");if(p[0]!=="base")return null;let c,date,round,home,away;if(p.length>=6&&/^\d{4}-\d\d-\d\d$/.test(p[3])){c=p[1];date=p[3];home=p[4];away=p.slice(5).join("|")}else{c=p[1];round=Number(p[2]);home=p[3];away=p.slice(4).join("|")}let best=null,bs=0;for(const f of FIXTURES.filter(x=>x.competition===c)){if(date&&Math.abs((parseUTC(f.date)-parseUTC(date))/86400000)>1)continue;if(round&&f.round&&Number(f.round)!==round)continue;const s=(similarity(home,f.home)+similarity(away,f.away))/2;if(s>bs){bs=s;best=f}}return bs>=.62?best:null}
-function importState(x){const d=defaultState();state={starts:Object.assign(d.starts,x.starts||{}),otherRatings:Object.assign({},x.otherRatings||{}),scores:{},penalties:{},customFixtures:Array.isArray(x.customFixtures)?x.customFixtures:[],settings:Object.assign(d.settings,x.settings||{})};for(const [id,v] of Object.entries(x.scores||{})){if(id.startsWith("custom|"))state.scores[id]=v;else{const f=FIXTURES.find(x=>x.id===id)||findNewFixture(id);if(f)state.scores[f.id]=v}}for(const [id,v] of Object.entries(x.penalties||{})){if(id.startsWith("custom|"))state.penalties[id]=v;else{const f=FIXTURES.find(x=>x.id===id)||findNewFixture(id);if(f)state.penalties[f.id]=v}}save()}
+function importState(x){
+  const d=defaultState();
+  state={
+    officialDataVersion:OFFICIAL_DATA_VERSION,
+    starts:Object.assign(d.starts,x.starts||{}),
+    otherRatings:Object.assign(d.otherRatings,x.otherRatings||{}),
+    scores:{},
+    penalties:{},
+    customFixtures:Array.isArray(x.customFixtures)?x.customFixtures:[],
+    settings:Object.assign(d.settings,x.settings||{})
+  };
+  for(const [id,v] of Object.entries(x.scores||{})){
+    if(id.startsWith("custom|"))state.scores[id]=v;
+    else{const f=FIXTURES.find(x=>x.id===id)||findNewFixture(id);if(f)state.scores[f.id]=v}
+  }
+  for(const [id,v] of Object.entries(x.penalties||{})){
+    if(id.startsWith("custom|"))state.penalties[id]=v;
+    else{const f=FIXTURES.find(x=>x.id===id)||findNewFixture(id);if(f)state.penalties[f.id]=v}
+  }
+  save();
+}

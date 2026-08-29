@@ -58,8 +58,9 @@
 
     const d=defaultState();
     const next={
+      officialDataVersion:OFFICIAL_DATA_VERSION,
       starts:Object.assign(d.starts,backup.starts||{}),
-      otherRatings:Object.assign({},backup.otherRatings||{}),
+      otherRatings:Object.assign(d.otherRatings,backup.otherRatings||{}),
       scores:{},penalties:{},
       customFixtures:Array.isArray(backup.customFixtures)?backup.customFixtures:[],
       settings:Object.assign(d.settings,backup.settings||{})

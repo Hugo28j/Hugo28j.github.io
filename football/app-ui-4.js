@@ -6,7 +6,7 @@ function renderManagement(){
     if(n.maxRating<=n.minRating)return alert("Maximum rating must be higher than minimum rating.");
     state.settings=n;save();alert("Settings saved.");renderManagement();
   };
-  $("#resetSettings").onclick=()=>{if(confirm("Restore formula defaults?")){state.settings=clone(DEFAULT_SETTINGS);save();renderManagement()}};
+  $("#resetSettings").onclick=()=>{if(confirm("Restore formula defaults?")){state.settings=clone(DEFAULT_SETTINGS);state.officialDataVersion=OFFICIAL_DATA_VERSION;save();renderManagement()}};
   $("#customAdd").onclick=()=>{
     const c=$("#customComp").value,date=$("#customDate").value,time=$("#customTime").value||"20:00",home=$("#customHome").value.trim(),away=$("#customAway").value.trim();
     if(!date||!home||!away)return alert("Enter date, home club and away club.");
@@ -15,7 +15,7 @@ function renderManagement(){
   $("#customList").innerHTML=state.customFixtures.map(f=>`<div class="custom-row">${niceDate(f.date)} · ${COMP[f.competition].short} · ${f.home} – ${f.away}<button data-del="${f.id}">Remove</button></div>`).join("");
   $("#customList").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{state.customFixtures=state.customFixtures.filter(f=>f.id!==b.dataset.del);delete state.scores[b.dataset.del];delete state.penalties[b.dataset.del];save();renderManagement()});
   $("#clearScores").onclick=()=>{if(confirm("Clear only your manual score overrides? Automatic final scores will still appear.")){state.scores={};state.penalties={};save();alert("Manual overrides cleared.")}};
-  $("#resetStarts").onclick=()=>{if(confirm("Restore starting ratings?")){state.starts=clone(DEFAULT_STARTS);state.otherRatings={};save();renderManagement()}};
+  $("#resetStarts").onclick=()=>{if(confirm("Restore starting ratings?")){state.starts=clone(DEFAULT_STARTS);state.otherRatings=clone(DEFAULT_OTHER_RATINGS);state.officialDataVersion=OFFICIAL_DATA_VERSION;save();renderManagement()}};
 }
 
 function openClub(team){
