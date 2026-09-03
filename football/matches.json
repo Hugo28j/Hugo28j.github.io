@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-02T21:48:29.994Z",
+  "generatedAt": "2026-09-03T00:14:20.477Z",
   "source": "ESPN scores + official UEFA qualifier pairing validation",
   "fullSync": false,
   "requests": 14,
@@ -12519,13 +12519,13 @@
       "away": "Union St.-Gilloise",
       "round": null,
       "stage": "",
-      "completed": false,
+      "completed": true,
       "postponed": false,
-      "statusName": "STATUS_FIRST_HALF",
-      "statusDescription": "First Half",
-      "statusState": "in",
-      "homeScore": null,
-      "awayScore": null,
+      "statusName": "STATUS_FULL_TIME",
+      "statusDescription": "Full Time",
+      "statusState": "post",
+      "homeScore": 0,
+      "awayScore": 3,
       "penaltyWinner": null
     },
     {
