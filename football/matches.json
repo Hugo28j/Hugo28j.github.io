@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T14:33:10.387Z",
+  "generatedAt": "2026-09-03T18:37:46.090Z",
   "source": "ESPN scores + official UEFA qualifier pairing validation",
   "fullSync": false,
   "requests": 14,
@@ -12541,9 +12541,9 @@
       "stage": "",
       "completed": false,
       "postponed": false,
-      "statusName": "STATUS_SCHEDULED",
-      "statusDescription": "Scheduled",
-      "statusState": "pre",
+      "statusName": "STATUS_FIRST_HALF",
+      "statusDescription": "First Half",
+      "statusState": "in",
       "homeScore": null,
       "awayScore": null,
       "penaltyWinner": null
@@ -12561,9 +12561,9 @@
       "stage": "",
       "completed": false,
       "postponed": false,
-      "statusName": "STATUS_SCHEDULED",
-      "statusDescription": "Scheduled",
-      "statusState": "pre",
+      "statusName": "STATUS_FIRST_HALF",
+      "statusDescription": "First Half",
+      "statusState": "in",
       "homeScore": null,
       "awayScore": null,
       "penaltyWinner": null
