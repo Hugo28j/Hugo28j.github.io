@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-06T23:52:38.920Z",
+  "generatedAt": "2026-09-07T04:37:51.662Z",
   "source": "ESPN scores + official UEFA qualifier pairing validation",
   "fullSync": false,
   "requests": 14,
@@ -13839,13 +13839,13 @@
       "away": "Académico de Viseu",
       "round": null,
       "stage": "",
-      "completed": false,
+      "completed": true,
       "postponed": false,
-      "statusName": "STATUS_SECOND_HALF",
-      "statusDescription": "Second Half",
-      "statusState": "in",
-      "homeScore": null,
-      "awayScore": null,
+      "statusName": "STATUS_FULL_TIME",
+      "statusDescription": "Full Time",
+      "statusState": "post",
+      "homeScore": 0,
+      "awayScore": 1,
       "penaltyWinner": null
     },
     {
