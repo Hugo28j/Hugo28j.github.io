@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-08T11:16:06.710Z",
+  "generatedAt": "2026-09-08T15:09:00.658Z",
   "source": "ESPN scores + official UEFA qualifier pairing validation",
   "fullSync": false,
   "requests": 14,
   "failures": [],
-  "postponed": 2,
+  "postponed": 1,
   "uefaConflictsBlocked": 0,
   "uefaPairingsRejected": 0,
   "fixtures": [
@@ -14079,13 +14079,13 @@
       "away": "Go Ahead Eagles",
       "round": null,
       "stage": "",
-      "completed": false,
-      "postponed": true,
-      "statusName": "STATUS_SUSPENDED",
-      "statusDescription": "Suspended",
+      "completed": true,
+      "postponed": false,
+      "statusName": "STATUS_FULL_TIME",
+      "statusDescription": "Full Time",
       "statusState": "post",
-      "homeScore": null,
-      "awayScore": null,
+      "homeScore": 3,
+      "awayScore": 3,
       "penaltyWinner": null
     },
     {
