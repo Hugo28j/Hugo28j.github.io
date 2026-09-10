@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T21:41:52.791Z",
+  "generatedAt": "2026-09-10T00:13:40.431Z",
   "source": "ESPN scores + official UEFA qualifier pairing validation",
   "fullSync": false,
   "requests": 14,
@@ -14259,13 +14259,13 @@
       "away": "Benfica",
       "round": null,
       "stage": "",
-      "completed": false,
+      "completed": true,
       "postponed": false,
-      "statusName": "STATUS_SECOND_HALF",
-      "statusDescription": "Second Half",
-      "statusState": "in",
-      "homeScore": null,
-      "awayScore": null,
+      "statusName": "STATUS_FULL_TIME",
+      "statusDescription": "Full Time",
+      "statusState": "post",
+      "homeScore": 0,
+      "awayScore": 4,
       "penaltyWinner": null
     },
     {
