@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-10T14:25:12.339Z",
+  "generatedAt": "2026-09-10T18:26:28.809Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -1102,7 +1102,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_IN_PROGRESS"
       },
       {
         "sourceEventId": "401915442",
@@ -1124,7 +1124,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_SECOND_HALF"
       },
       {
         "sourceEventId": "401915440",
