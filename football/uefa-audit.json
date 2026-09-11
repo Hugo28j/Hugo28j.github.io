@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-10T21:36:50.814Z",
+  "generatedAt": "2026-09-11T00:09:14.222Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -1076,66 +1076,66 @@
         "date": "2026-09-10",
         "home": "Bayern Munich",
         "away": "Bodo/Glimt",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 5,
+        "awayScore": 0,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915441",
         "date": "2026-09-10",
         "home": "Como",
         "away": "RB Leipzig",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 4,
+        "awayScore": 1,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915444",
         "date": "2026-09-10",
         "home": "Fenerbahce",
         "away": "AS Roma",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 1,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_IN_PROGRESS"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915442",
         "date": "2026-09-10",
         "home": "Manchester United",
         "away": "Sabah FK",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 4,
+        "awayScore": 0,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915422",
         "date": "2026-09-10",
         "home": "PSV Eindhoven",
         "away": "Shakhtar Donetsk",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 1,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915440",
         "date": "2026-09-10",
         "home": "Slavia Prague",
         "away": "Lens",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 3,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915417",
