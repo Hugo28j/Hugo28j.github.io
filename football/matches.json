@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T20:06:31.833Z",
+  "generatedAt": "2026-09-16T22:55:00.507Z",
   "source": "ESPN scores + official UEFA qualifier pairing validation",
   "fullSync": false,
   "requests": 0,
@@ -7,9 +7,9 @@
     "bel.1 20260912-20261007: 400 https://site.api.espn.com/apis/site/v2/sports/soccer/bel.1/scoreboard?dates=20260912-20261007&limit=500",
     "eng.1 20260912-20261007: 400 https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20260912-20261007&limit=500",
     "esp.1 20260912-20261007: 400 https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20260912-20261007&limit=500",
-    "ger.1 20260912-20261007: 502 https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20260912-20261007&limit=500",
+    "ger.1 20260912-20261007: 400 https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20260912-20261007&limit=500",
     "fra.1 20260912-20261007: 400 https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20260912-20261007&limit=500",
-    "ned.1 20260912-20261007: 502 https://site.api.espn.com/apis/site/v2/sports/soccer/ned.1/scoreboard?dates=20260912-20261007&limit=500",
+    "ned.1 20260912-20261007: 400 https://site.api.espn.com/apis/site/v2/sports/soccer/ned.1/scoreboard?dates=20260912-20261007&limit=500",
     "por.1 20260912-20261007: 400 https://site.api.espn.com/apis/site/v2/sports/soccer/por.1/scoreboard?dates=20260912-20261007&limit=500",
     "ita.1 20260912-20261007: 400 https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20260912-20261007&limit=500",
     "uefa.champions_qual 20260912-20261007: 400 https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions_qual/scoreboard?dates=20260912-20261007&limit=500",
