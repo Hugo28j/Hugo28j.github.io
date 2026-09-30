@@ -39,10 +39,12 @@ function parseOpenFootball(txt,c){
   if(round==null||!date||! /\s+v\s+/.test(line))continue;
   let part=line,time="TBD";const tm=part.match(/^(\d{1,2}:\d{2})\s+/);if(tm){time=tm[1];part=part.slice(tm[0].length)}
   const sides=part.split(/\s+v\s+/,2);if(sides.length!==2)continue;
-  let home=ofName(c,sides[0]),away=sides[1].trim();
-  away=away.replace(/\s+\d+\s*-\s*\d+(?:\s*\([^)]*\))?\s*$/,'').trim();away=ofName(c,away);
+  let home=ofName(c,sides[0]),awayRaw=sides[1].trim();
+  const result=awayRaw.match(/\s+(\d+)\s*-\s*(\d+)(?:\s*\([^)]*\))?\s*$/),completed=!!result;
+  const homeScore=completed?Number(result[1]):null,awayScore=completed?Number(result[2]):null;
+  let away=awayRaw.replace(/\s+\d+\s*-\s*\d+(?:\s*\([^)]*\))?\s*$/,'').trim();away=ofName(c,away);
   if(!home||!away)continue;
-  raw.push({competition:c,round,date,time,home,away,stage:`Matchday ${round}`,completed:false,provisional:time==="TBD",source:"openfootball"});
+  raw.push({competition:c,round,date,time,home,away,stage:`Matchday ${round}`,completed,homeScore,awayScore,provisional:time==="TBD",source:"openfootball"});
  }
  const unique=new Map();for(const f of raw)unique.set(`${f.round}|${f.home}|${f.away}`,f);
  return[...unique.values()].map(f=>({...f,id:`fallback|${f.competition}|${f.round}|${f.home}|${f.away}`}));
@@ -79,14 +81,17 @@ function mergeEspn(base,synced){
     continue;
    }
    sourceEventTargets.set(key,best.id);
+   const syncedFinal=!!s.completed&&Number.isFinite(Number(s.homeScore))&&Number.isFinite(Number(s.awayScore)),fallbackFinal=!!best.completed&&Number.isFinite(Number(best.homeScore))&&Number.isFinite(Number(best.awayScore));
    Object.assign(best,{
     kickoff:s.kickoff||best.kickoff,time:s.time||best.time,
     sourceEventId:s.sourceEventId||best.sourceEventId,
     sourceLeague:s.sourceLeague||best.sourceLeague,
-    completed:!!s.completed,homeScore:s.homeScore,awayScore:s.awayScore,
-    penaltyWinner:s.penaltyWinner||null,syncedStage:s.stage||null,
+    completed:syncedFinal||fallbackFinal,
+    homeScore:syncedFinal?Number(s.homeScore):(fallbackFinal?Number(best.homeScore):null),
+    awayScore:syncedFinal?Number(s.awayScore):(fallbackFinal?Number(best.awayScore):null),
+    penaltyWinner:syncedFinal?(s.penaltyWinner||null):(best.penaltyWinner||null),syncedStage:s.stage||null,
     syncedHome:s.home,syncedAway:s.away,syncedDate:s.date,
-    source:"espn+fallback"
+    source:syncedFinal?"espn+fallback":fallbackFinal?"openfootball+espn-schedule":"espn+fallback"
    });
   }else if(s?.competition&&s?.home&&s?.away&&s?.date){
    all.push({...s,id:`espn|${s.competition}|${s.sourceEventId||`${s.date}|${s.home}|${s.away}`}`,syncedHome:s.home,syncedAway:s.away,syncedDate:s.date,source:"espn"});

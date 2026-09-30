@@ -110,7 +110,7 @@ function addUefaCandidate(x,origin="sync"){
   const arr=uefaCandidates.get(key),rec={...x,_origin:origin},same=arr.find(y=>y.competition===x.competition&&y.sourceLeague===x.sourceLeague);
   if(same)arr[arr.indexOf(same)]=rec;else arr.push(rec);
 }
-for(const x of old.fixtures||[]){if(isUefa(x)){if(!full)addUefaCandidate(x,"old");}else if(x?.sourceEventId)domesticMap.set(`${x.competition}|${x.sourceEventId}`,x);}
+for(const x of old.fixtures||[]){if(isUefa(x))addUefaCandidate(x,"old");else if(x?.sourceEventId)domesticMap.set(`${x.competition}|${x.sourceEventId}`,x);}
 
 let requests=0,failures=[];
 for(const [competition,slug] of SOURCES)for(const [a,b] of chunks(start,end,31)){
