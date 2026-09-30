@@ -28,7 +28,7 @@ const ymd=d=>`${d.getUTCFullYear()}${String(d.getUTCMonth()+1).padStart(2,"0")}$
 const add=(d,n)=>{const x=new Date(d);x.setUTCDate(x.getUTCDate()+n);return x};
 const iso=s=>{const d=new Date(s);return Number.isNaN(d.getTime())?null:d.toISOString().slice(0,10)};
 function chunks(a,b,n=31){const out=[];let x=new Date(a);while(x<=b){let y=add(x,n-1);if(y>b)y=new Date(b);out.push([new Date(x),new Date(y)]);x=add(y,1)}return out}
-async function get(url){const r=await fetch(url,{headers:{"user-agent":"Mozilla/5.0 club-rating-sync/1.3","accept":"application/json,text/html;q=0.9,*/*;q=0.8"}});if(!r.ok)throw new Error(`${r.status} ${url}`);return r}
+async function get(url){const r=await fetch(url,{headers:{"user-agent":"club-rating-sync/1.4","accept":"application/json,text/html;q=0.9,*/*;q=0.8"}});if(!r.ok)throw new Error(`${r.status} ${url}`);return r}
 async function getJson(url){return (await get(url)).json()}
 
 function statusInfo(status){
@@ -112,11 +112,24 @@ function addUefaCandidate(x,origin="sync"){
 }
 for(const x of old.fixtures||[]){if(isUefa(x))addUefaCandidate(x,"old");else if(x?.sourceEventId)domesticMap.set(`${x.competition}|${x.sourceEventId}`,x);}
 
+function monthKeysBetween(a,b){
+  const out=[],x=new Date(Date.UTC(a.getUTCFullYear(),a.getUTCMonth(),1)),last=new Date(Date.UTC(b.getUTCFullYear(),b.getUTCMonth(),1));
+  while(x<=last){out.push(`${x.getUTCFullYear()}${String(x.getUTCMonth()+1).padStart(2,"0")}`);x.setUTCMonth(x.getUTCMonth()+1)}
+  return out;
+}
+const startIso=iso(start),endIso=iso(end);
 let requests=0,failures=[];
-for(const [competition,slug] of SOURCES)for(const [a,b] of chunks(start,end,31)){
-  const url=`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${ymd(a)}-${ymd(b)}&limit=500`;
-  try{const data=await getJson(url);requests++;for(const e of data.events||[]){const x=extract(e,competition,slug);if(!x?.date||!x.sourceEventId)continue;if(isUefa(x))addUefaCandidate(x,"sync");else domesticMap.set(`${competition}|${x.sourceEventId}`,x)}}
-  catch(err){failures.push(`${slug} ${ymd(a)}-${ymd(b)}: ${err.message}`)}
+for(const [competition,slug] of SOURCES)for(const month of monthKeysBetween(start,end)){
+  // ESPN retired dates=START-END in September 2026. YYYYMM still works.
+  const url=`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${month}&limit=1000`;
+  try{
+    const data=await getJson(url);requests++;
+    for(const e of data.events||[]){
+      const x=extract(e,competition,slug);
+      if(!x?.date||!x.sourceEventId||x.date<startIso||x.date>endIso)continue;
+      if(isUefa(x))addUefaCandidate(x,"sync");else domesticMap.set(`${competition}|${x.sourceEventId}`,x);
+    }
+  }catch(err){failures.push(`${slug} ${month}: ${err.message}`)}
 }
 
 const uefaFixtures=[],conflicts=[],rejectedByUefa=[],unverifiedBecauseOfficialUnavailable=[];
