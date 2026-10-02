@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T10:02:13.267Z",
+  "generatedAt": "2026-10-02T15:47:06.841Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -3563,7 +3563,7 @@
         "sourceEventId": "401915561",
         "date": "2026-10-15",
         "home": "Jagiellonia Bialystok",
-        "away": "ARARAT-ARMENIA",
+        "away": "Ararat-Armenia",
         "completed": false,
         "homeScore": null,
         "awayScore": null,
@@ -3705,7 +3705,7 @@
       {
         "sourceEventId": "401915548",
         "date": "2026-10-22",
-        "home": "ARARAT-ARMENIA",
+        "home": "Ararat-Armenia",
         "away": "AZ Alkmaar",
         "completed": false,
         "homeScore": null,
