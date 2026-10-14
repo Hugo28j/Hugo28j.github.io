@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-14T13:42:10.073Z",
+  "generatedAt": "2026-10-14T18:36:53.980Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -1278,18 +1278,18 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_IN_PROGRESS"
       },
       {
         "sourceEventId": "401915415",
         "date": "2026-10-14",
         "home": "LASK Linz",
         "away": "Liverpool",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 3,
+        "awayScore": 6,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915407",
