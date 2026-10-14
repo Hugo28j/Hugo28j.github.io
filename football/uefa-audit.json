@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-14T18:36:53.980Z",
+  "generatedAt": "2026-10-14T22:17:37.214Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -1241,44 +1241,44 @@
         "date": "2026-10-14",
         "home": "AS Roma",
         "away": "Real Madrid",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 3,
+        "awayScore": 4,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915409",
         "date": "2026-10-14",
         "home": "Aston Villa",
         "away": "Fenerbahce",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 6,
+        "awayScore": 0,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915393",
         "date": "2026-10-14",
         "home": "Bodo/Glimt",
         "away": "Borussia Dortmund",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 0,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915416",
         "date": "2026-10-14",
         "home": "Feyenoord Rotterdam",
         "away": "Como",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 3,
+        "awayScore": 2,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_IN_PROGRESS"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915415",
@@ -1296,44 +1296,44 @@
         "date": "2026-10-14",
         "home": "Manchester City",
         "away": "Paris Saint-Germain",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 4,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915408",
         "date": "2026-10-14",
         "home": "Real Betis",
         "away": "FC Porto",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 3,
+        "awayScore": 2,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915406",
         "date": "2026-10-14",
         "home": "Shakhtar Donetsk",
         "away": "AEK Athens",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 3,
+        "awayScore": 1,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915405",
         "date": "2026-10-14",
         "home": "Slovan Bratislava",
         "away": "VfB Stuttgart",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 0,
+        "awayScore": 3,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915402",
