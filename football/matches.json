@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-16T08:29:17.957Z",
+  "generatedAt": "2026-10-16T11:19:53.654Z",
   "source": "ESPN scores + official UEFA qualifier pairing validation",
-  "fullSync": true,
-  "requests": 168,
+  "fullSync": false,
+  "requests": 28,
   "failures": [],
   "postponed": 1,
   "uefaConflictsBlocked": 0,
