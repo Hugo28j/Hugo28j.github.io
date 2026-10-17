@@ -12,3 +12,9 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 9px
 .overlay{position:fixed;inset:0;z-index:100;background:#030811ef;overflow:auto;padding:22px 10px}.overlay[hidden]{display:none}.modal{max-width:1100px;margin:auto;background:#0d192c;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 20px 70px #0008}.modal-head{display:flex;justify-content:space-between;gap:12px}.modal-head h2{margin-top:5px}.modal-head small{color:var(--muted)}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.metrics>div{background:#081426;border:1px solid var(--line);border-radius:11px;padding:11px}.metrics small{display:block;color:var(--muted)}.metrics b{font-size:18px}.table-wrap{overflow:auto}
 footer{color:#768aa9;font-size:11px;margin:22px 2px}
 @media(max-width:950px){#mainNav{flex-wrap:wrap}.picker{width:100%;min-width:0;margin-right:0}.team-grid,.settings,.compare{grid-template-columns:1fr}.match{grid-template-columns:90px 1fr 120px 1fr}.impact{grid-column:1/-1}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.wrap{padding:8px 6px 35px}header{padding:15px}.nav-action{flex:1}.team-card{grid-template-columns:1fr 90px}.team-card>div:last-child{grid-column:1/-1;text-align:left}.match{grid-template-columns:1fr 105px 1fr}.date{grid-column:1/-1}.metrics{grid-template-columns:1fr 1fr}.card{padding:11px}th,td{padding:8px 5px;font-size:11px}}
+
+/* Interactive standings: sort by any column, with visible direction. */
+th.click-sort{cursor:pointer;user-select:none;white-space:nowrap}
+th.click-sort:hover,th.click-sort:focus-visible{color:#eef4ff;background:#243650;outline:1px solid #74a9ff77}
+th.click-sort[aria-sort="ascending"]::after{content:" ▲";color:#74a9ff}
+th.click-sort[aria-sort="descending"]::after{content:" ▼";color:#74a9ff}
