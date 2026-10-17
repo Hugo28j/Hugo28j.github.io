@@ -6,6 +6,7 @@ const UEFA_AUDIT_OUT=new URL("./uefa-audit.json",import.meta.url);
 const SOURCES=[
   ["jpl","bel.1"],["epl","eng.1"],["laliga","esp.1"],["bundesliga","ger.1"],
   ["ligue1","fra.1"],["eredivisie","ned.1"],["primeira","por.1"],["seriea","ita.1"],
+  ["tur","tur.1"],["gre","gre.1"],
   ["ucl","uefa.champions_qual"],["uel","uefa.europa_qual"],["uecl","uefa.europa.conf_qual"],
   ["ucl","uefa.champions"],["uel","uefa.europa"],["uecl","uefa.europa.conf"]
 ];
