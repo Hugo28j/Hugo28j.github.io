@@ -30,13 +30,26 @@ function ofMonth(m){return{Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9
 function ofDate(y,m,d){return`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`}
 function ofName(c,n){n=String(n||"").replace(/\s+/g," ").trim();return OF_NAMES[c]?.[n]||n}
 function parseOpenFootball(txt,c){
- let round=null,date=null,year=2026;const raw=[];
+ let round=null,date=null,year=2026,lastMonth=null;const raw=[];
  for(const rawLine of String(txt||"").split(/\r?\n/)){
   const line=rawLine.trim();if(!line)continue;
-  let m=line.match(/^▪\s*(?:Matchday\s+)?(\d+)(?:\.\s*Round)?/i);if(m){round=Number(m[1]);continue}
+  let m=line.match(/^▪\s*(?:Matchday\s+)?(\d+)(?:\.\s*Round)?/i);
+  if(m){
+   round=Number(m[1]);
+   // Never let the previous round's date leak into a TBC round.
+   date=null;
+   continue;
+  }
   m=line.match(/^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?$/);
-  if(m){if(m[3])year=Number(m[3]);date=ofDate(year,ofMonth(m[1]),Number(m[2]));continue}
-  if(round==null||!date||! /\s+v\s+/.test(line))continue;
+  if(m){
+   const month=ofMonth(m[1]);
+   if(m[3])year=Number(m[3]);
+   else if(lastMonth!=null&&month<lastMonth-6)year++;
+   lastMonth=month;
+   date=ofDate(year,month,Number(m[2]));
+   continue;
+  }
+  if(round==null||! /\s+v\s+/.test(line))continue;
   let part=line,time="TBD";const tm=part.match(/^(\d{1,2}:\d{2})\s+/);if(tm){time=tm[1];part=part.slice(tm[0].length)}
   const sides=part.split(/\s+v\s+/,2);if(sides.length!==2)continue;
   let home=ofName(c,sides[0]),awayRaw=sides[1].trim();
@@ -44,7 +57,7 @@ function parseOpenFootball(txt,c){
   const homeScore=completed?Number(result[1]):null,awayScore=completed?Number(result[2]):null;
   let away=awayRaw.replace(/\s+\d+\s*-\s*\d+(?:\s*\([^)]*\))?\s*$/,'').trim();away=ofName(c,away);
   if(!home||!away)continue;
-  raw.push({competition:c,round,date,time,home,away,stage:`Matchday ${round}`,completed,homeScore,awayScore,provisional:time==="TBD",source:"openfootball"});
+  raw.push({competition:c,round,date,time,home,away,stage:`Matchday ${round}`,completed,homeScore,awayScore,provisional:!date||time==="TBD",source:"openfootball"});
  }
  const unique=new Map();for(const f of raw)unique.set(`${f.round}|${f.home}|${f.away}`,f);
  return[...unique.values()].map(f=>({...f,id:`fallback|${f.competition}|${f.round}|${f.home}|${f.away}`}));
@@ -56,13 +69,24 @@ function uefaFallback(){const out=[];for(const [c,arr] of Object.entries(window.
 // to the wrong fixture (for example Espanyol -> FC Barcelona).
 function fixtureMergeScore(a,b){
  if(a.competition!==b.competition)return-1;
- const dd=Math.abs((parseUTC(a.date)-parseUTC(b.date))/86400000);
- if(dd>2)return-1;
  const hs=similarity(a.home,b.home),as=similarity(a.away,b.away);
  const domestic=COMP[a.competition]?.type==="domestic";
  const minSide=domestic?.70:.78;
  if(hs<minSide||as<minSide)return-1;
- return((hs+as)/2)-dd*.04;
+ const pair=(hs+as)/2;
+
+ // A home/away pair occurs only once in a domestic league season. This lets a
+ // TBC calendar round (or a postponed/rescheduled match) inherit ESPN's real date,
+ // time and final score without losing its correct matchday number.
+ if(domestic&&hs>=.82&&as>=.82&&(!a.date||!b.date))return pair+.08;
+
+ if(!a.date||!b.date)return-1;
+ const dd=Math.abs((parseUTC(a.date)-parseUTC(b.date))/86400000);
+ if(dd<=3)return pair-dd*.04;
+
+ // Keep strong exact-pair matching for rescheduled domestic games.
+ if(domestic&&hs>=.90&&as>=.90)return pair-Math.min(dd,90)*.002;
+ return-1;
 }
 function mergeEspn(base,synced){
  const all=[...base];
@@ -83,10 +107,14 @@ function mergeEspn(base,synced){
    sourceEventTargets.set(key,best.id);
    const syncedFinal=!!s.completed&&Number.isFinite(Number(s.homeScore))&&Number.isFinite(Number(s.awayScore)),fallbackFinal=!!best.completed&&Number.isFinite(Number(best.homeScore))&&Number.isFinite(Number(best.awayScore));
    Object.assign(best,{
-    kickoff:s.kickoff||best.kickoff,time:s.time||best.time,
+    date:s.date||best.date,kickoff:s.kickoff||best.kickoff,time:s.time||best.time,
     sourceEventId:s.sourceEventId||best.sourceEventId,
     sourceLeague:s.sourceLeague||best.sourceLeague,
     completed:syncedFinal||fallbackFinal,
+    postponed:!!s.postponed,
+    statusName:s.statusName||best.statusName||"",
+    statusDescription:s.statusDescription||best.statusDescription||"",
+    statusState:s.statusState||best.statusState||"",
     homeScore:syncedFinal?Number(s.homeScore):(fallbackFinal?Number(best.homeScore):null),
     awayScore:syncedFinal?Number(s.awayScore):(fallbackFinal?Number(best.awayScore):null),
     penaltyWinner:syncedFinal?(s.penaltyWinner||null):(best.penaltyWinner||null),syncedStage:s.stage||null,
@@ -104,5 +132,31 @@ async function loadFixtures(){
  const domestic=await Promise.all(Object.entries(OF_CALENDARS).map(async([c,url])=>{try{const r=await fetch(`${url}?v=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(String(r.status));return parseOpenFootball(await r.text(),c)}catch(e){console.warn(`Fallback calendar failed for ${c}`,e);return[]}}));
  domestic.forEach(a=>base.push(...a));
  let d={generatedAt:null,source:"Fallback calendars",fixtures:[]};try{const r=await fetch(`matches.json?v=${Date.now()}`,{cache:"no-store"});if(r.ok)d=await r.json()}catch(e){console.warn("matches.json unavailable",e)}
- FIXTURES=mergeEspn(base,d.fixtures||[]);return{...d,totalFixtures:FIXTURES.length,fallbackCount:base.length};
+ FIXTURES=mergeEspn(base,d.fixtures||[]);
+ assignUefaLeaguePhaseRounds(FIXTURES);
+ return{...d,totalFixtures:FIXTURES.length,fallbackCount:base.length};
+}
+
+function assignUefaLeaguePhaseRounds(fixtures){
+ const phases={
+  ucl:{start:"2026-09-08",end:"2027-01-27",source:"uefa.champions"},
+  uel:{start:"2026-09-16",end:"2027-01-28",source:"uefa.europa"},
+  uecl:{start:"2026-10-15",end:"2026-12-17",source:"uefa.europa.conf"}
+ };
+ for(const [c,p] of Object.entries(phases)){
+  const phase=fixtures.filter(f=>f.competition===c&&f.sourceLeague===p.source&&f.date>=p.start&&f.date<=p.end&&f.date).sort((a,b)=>a.date.localeCompare(b.date));
+  const dates=[...new Set(phase.map(f=>f.date))].sort();
+  if(!dates.length)continue;
+  const groups=[];let current=[];
+  for(const date of dates){
+   if(current.length){
+    const prev=current[current.length-1],gap=(parseUTC(date)-parseUTC(prev))/86400000;
+    if(gap>3){groups.push(current);current=[]}
+   }
+   current.push(date);
+  }
+  if(current.length)groups.push(current);
+  const roundByDate={};groups.forEach((g,i)=>g.forEach(d=>roundByDate[d]=i+1));
+  phase.forEach(f=>{if(!f.round)f.round=roundByDate[f.date]||null;if(!f.stage&&f.round)f.stage=`Matchday ${f.round}`});
+ }
 }

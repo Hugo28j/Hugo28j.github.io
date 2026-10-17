@@ -18,17 +18,18 @@ function renderMatches(c){
 }
 function renderMatchList(c,autoScroll=false){
   const q=($(`#${c}-teamFilter`)?.value||"").toLowerCase(),r=$(`#${c}-roundFilter`)?.value||"all",open=$(`#${c}-openOnly`)?.checked||false,calc=recalc(),
-    a=chronological(allFixtures().filter(f=>f.competition===c)).filter(f=>(r==="all"||String(f.round)===r)&&(!q||f.home.toLowerCase().includes(q)||f.away.toLowerCase().includes(q))&&(!open||!scoreValue(f))),
+    a=chronological(allFixtures().filter(f=>f.competition===c)).sort((x,y)=>(x.date||"9999-12-31").localeCompare(y.date||"9999-12-31")||(x.kickoff||"").localeCompare(y.kickoff||"")).filter(f=>(r==="all"||String(f.round)===r)&&(!q||f.home.toLowerCase().includes(q)||f.away.toLowerCase().includes(q))&&(!open||!scoreValue(f))),
     root=$(`#${c}-matchList`);
   if(!a.length){root.innerHTML='<div class="card muted">No matches for this filter.</div>';return}
   const now=Date.now();
-  const next=a.find(f=>!scoreValue(f)&&!f.postponed&&fixtureMoment(f)>=now)||
-    a.find(f=>!scoreValue(f)&&!f.postponed&&f.date>=new Date().toISOString().slice(0,10));
+  const next=a.find(f=>f.date&&!scoreValue(f)&&!f.postponed&&fixtureMoment(f)>=now)||
+    a.find(f=>f.date&&!scoreValue(f)&&!f.postponed&&f.date>=new Date().toISOString().slice(0,10));
   root.innerHTML="";let last="",nextEl=null;
   for(const f of a){
     const group=f.round?`Matchday ${f.round}`:(f.stage||niceDate(f.date));
     if(group!==last){root.insertAdjacentHTML("beforeend",`<h3 class="round-title">${group}</h3>`);last=group}
-    const s=scoreValue(f),manual=state.scores[f.id],h=manual?.h??(f.completed?f.homeScore:""),aa=manual?.a??(f.completed?f.awayScore:""),d=calc.details[f.id],pen=penaltyValue(f),
+    const s=scoreValue(f),manual=state.scores[f.id],manualComplete=manual&&manual.h!==""&&manual.a!==""&&manual.h!=null&&manual.a!=null,
+      h=manualComplete?manual.h:(f.completed?f.homeScore:(manual?.h??"")),aa=manualComplete?manual.a:(f.completed?f.awayScore:(manual?.a??"")),d=calc.details[f.id],pen=penaltyValue(f),
       tied=h!==""&&aa!==""&&Number(h)===Number(aa),el=document.createElement("div");
     el.className="match"+(s?" scored":"")+(f===next?" next-fixture":"");
     el.innerHTML=`<div class="date">${niceDate(f.date)}<small>${f.time||""}</small><em>${f===next?"next":(scoreSource(f)||"scheduled")}</em></div><div class="home">${f.home}</div><div class="score"><div><input type="number" min="0" value="${h}"><b>–</b><input type="number" min="0" value="${aa}"></div>${tied?`<select><option value="">No shoot-out</option><option value="home" ${pen==="home"?"selected":""}>${f.home} wins pens</option><option value="away" ${pen==="away"?"selected":""}>${f.away} wins pens</option></select>`:""}</div><div>${f.away}</div><div class="impact">${d?`${fmt(d.rh)} → <b>${fmt(d.nh)}</b> <span class="${d.dh>=0?"up":"down"}">${signfmt(d.dh)}</span><br>${fmt(d.ra)} → <b>${fmt(d.na)}</b> <span class="${d.da>=0?"up":"down"}">${signfmt(d.da)}</span>`:"Enter a result to calculate impact."}</div>`;
