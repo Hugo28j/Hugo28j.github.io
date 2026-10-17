@@ -65,7 +65,7 @@
     "celtic":"Celtic","ferencvaros":"Ferencvaros","hapoel be er":"Hapoel Be'er",
     "omonia":"Omonia Nicosia","omonia nicosia":"Omonia Nicosia","rb salzburg":"RB Salzburg",
     "sparta prague":"Sparta Prague","sparta praha":"Sparta Prague","stade rennais":"Stade Rennais FC",
-    "ajax amsterdam":"Ajax","braga":"SC Braga","getafe":"Getafe CF","heart of midlothian":"Heart of Midlothian",
+    "ajax amsterdam":"Ajax","feyenoord rotterdam":"Feyenoord","braga":"SC Braga","getafe":"Getafe CF","heart of midlothian":"Heart of Midlothian",
     "hearts":"Heart of Midlothian","f c københavn":"F.C. København","fc københavn":"F.C. København",
     "fc copenhagen":"F.C. København","mjallby aif":"Mjällby AIF","inter d escaldes":"Inter D'Escaldes"
   });
