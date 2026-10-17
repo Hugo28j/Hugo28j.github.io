@@ -17,7 +17,7 @@
     "kasimpasa":"Kasimpasa","kasimpasa sk":"Kasimpasa",
     "genclerbirligi":"Genclerbirligi","genclerbirligi sk":"Genclerbirligi",
     "eyupspor":"Eyupspor","eyupspor":"Eyupspor",
-    "erzurumspor":"Erzurumspor","bb erzurumspor":"Erzurumspor",
+    "erzurumspor":"Erzurumspor","bb erzurumspor":"Erzurumspor","erzurum bb":"Erzurumspor",
     "erzurumspor fk":"Erzurumspor",
     "amed":"Amed SFK","amedspor":"Amed SFK","amed sfk":"Amed SFK",
     "corum":"Corum FK","corum fk":"Corum FK",
