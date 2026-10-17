@@ -78,7 +78,7 @@ function fixtureMergeScore(a,b){
  // A home/away pair occurs only once in a domestic league season. This lets a
  // TBC calendar round (or a postponed/rescheduled match) inherit ESPN's real date,
  // time and final score without losing its correct matchday number.
- if(domestic&&hs>=.82&&as>=.82&&(!a.date||!b.date))return pair+.08;
+ if(domestic&&hs>=.82&&as>=.82&&(!a.date||!b.date))return pair-.05;
 
  if(!a.date||!b.date)return-1;
  const dd=Math.abs((parseUTC(a.date)-parseUTC(b.date))/86400000);
