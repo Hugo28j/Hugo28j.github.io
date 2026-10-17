@@ -1,4 +1,4 @@
-// UI support for the 10 UEFA clubs promoted into the World Ranking.
+// UI support for UEFA league-phase clubs promoted into the World Ranking.
 (function(){
   const extras=window.EXTRA_RANKED_TEAMS||[];
   const extraSet=new Set(extras);
@@ -8,7 +8,7 @@
     if(!filters||filters.querySelector('[data-l="uefa_ranked"]'))return;
     const b=document.createElement("button");
     b.dataset.l="uefa_ranked";
-    b.textContent="UEFA ranked";
+    b.textContent="UEFA phase";
     b.classList.toggle("active",LEAGUE_FILTER.has("uefa_ranked"));
     b.onclick=()=>{
       LEAGUE_FILTER.has("uefa_ranked")?LEAGUE_FILTER.delete("uefa_ranked"):LEAGUE_FILTER.add("uefa_ranked");
@@ -19,7 +19,7 @@
 
   function updateWorldCopy(){
     const small=document.querySelector("#main-world .page-head > div > span");
-    if(small)small.textContent="Domestic clubs + selected UEFA clubs";
+    if(small)small.textContent="Domestic clubs + UEFA league-phase clubs";
   }
 
   function enableExtraRatingEdits(c){

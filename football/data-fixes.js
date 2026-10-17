@@ -40,6 +40,7 @@ Object.assign(ALIASES,{
   "mainz 05":"1. FSV Mainz 05",
   "union berlin":"1. FC Union Berlin",
   "cologne":"1. FC Köln",
+  "fc cologne":"1. FC Köln",
   "koln":"1. FC Köln",
   "werder bremen":"SV Werder Bremen",
   "hoffenheim":"TSG Hoffenheim",
@@ -126,6 +127,11 @@ function resolveTrackedFixtureName(name,competition){
   const exact=candidates.find(t=>normalized(t)===targetNorm);
   if(exact)return exact;
 
+  // UEFA source names are now explicitly aliased/fixed. Do not use substring
+  // fuzzy matching there: short names such as AZ previously caused false matches
+  // (for example SK Sturm Graz -> AZ). Exact normalized matches are still allowed.
+  if(!domestic)return name;
+
   let best=null,bestScore=0,secondScore=0;
   for(const t of candidates){
     const s=similarity(aliased,t);
@@ -133,10 +139,8 @@ function resolveTrackedFixtureName(name,competition){
     else if(s>secondScore)secondScore=s;
   }
 
-  // Domestic data must be reasonably certain. If two candidates are too close,
-  // leave the original name untouched instead of guessing the wrong club.
-  const threshold=domestic?.72:.86;
-  const margin=domestic?.12:.08;
+  // Domestic feeds can vary in naming, so retain conservative fuzzy matching.
+  const threshold=.72,margin=.12;
   return best&&bestScore>=threshold&&(bestScore-secondScore>=margin||bestScore>=.98)?best:name;
 }
 

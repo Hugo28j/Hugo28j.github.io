@@ -64,6 +64,38 @@ function renderEuropeanStandings(c){
   rows.forEach((t,i)=>{const s=stats[t],gd=s.gf-s.ga,tr=document.createElement("tr");tr.innerHTML=`<td>${i+1}</td><td><button class="club-link">${t}</button></td><td>${s.mp}</td><td>${s.w}</td><td>${s.d}</td><td>${s.l}</td><td>${s.gf}</td><td>${s.ga}</td><td>${gd>0?"+":""}${gd}</td><td><b>${s.pts}</b></td>`;tr.querySelector(".club-link").onclick=()=>openClub(t);body.appendChild(tr)});
 }
 function renderStandings(c){if(COMP[c].type==="europe")return renderEuropeanStandings(c);const root=$(`#${c}-standings`),old=$(`#${c}-period`)?.value||"all",rounds=[...new Set(allFixtures().filter(f=>f.competition===c).map(f=>f.round).filter(Boolean))].sort((a,b)=>a-b);root.innerHTML=`<div class="card filters"><select id="${c}-period"><option value="all">Overall / current</option>${rounds.map(r=>`<option value="${r}">Matchday ${r}</option>`).join("")}</select></div><div class="card"><table><thead id="${c}-head"></thead><tbody id="${c}-body"></tbody></table></div>`;if([...$(`#${c}-period`).options].some(o=>o.value===old))$(`#${c}-period`).value=old;$(`#${c}-period`).onchange=()=>renderStandingRows(c);renderStandingRows(c)}
-function renderStandingRows(c){const p=$(`#${c}-period`).value,teams=TEAMS_BY_LEAGUE[c];let after,before=null;if(p==="all")after=recalc();else{const d=lastRoundDate(c,p);after=recalc(d);before=recalc(prevRoundDate(c,p))}const world=ordered(ALL_TRACKED,after.ratings),wp=Object.fromEntries(world.map((t,i)=>[t,i+1])),rows=ordered(teams,after.ratings),body=$(`#${c}-body`);$(`#${c}-head`).innerHTML=p==="all"?'<tr><th># League</th><th># World</th><th>Club</th><th>Rating</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>GD</th></tr>':'<tr><th># League</th><th># World</th><th>Club</th><th>Rating</th><th>Δ</th><th>Move</th><th>MP</th><th>W</th><th>D</th><th>L</th></tr>';let bp={};if(before)ordered(teams,before.ratings).forEach((t,i)=>bp[t]=i+1);body.innerHTML="";rows.forEach((t,i)=>{const s=after.domesticStats[t],tr=document.createElement("tr"),club=`<button class="club-link">${t}</button>`;if(p==="all"){const gd=s.gf-s.ga;tr.innerHTML=`<td>${i+1}</td><td>${wp[t]}</td><td>${club}</td><td><b>${fmt(after.ratings[t])}</b></td><td>${s.g}</td><td>${s.w}</td><td>${s.d}</td><td>${s.l}</td><td>${gd>0?"+":""}${gd}</td>`}else{const delta=after.ratings[t]-before.ratings[t],mv=bp[t]-(i+1);tr.innerHTML=`<td>${i+1}</td><td>${wp[t]}</td><td>${club}</td><td><b>${fmt(after.ratings[t])}</b></td><td>${signfmt(delta)}</td><td>${movement(mv)}</td><td>${s.g}</td><td>${s.w}</td><td>${s.d}</td><td>${s.l}</td>`}tr.querySelector(".club-link").onclick=()=>openClub(t);body.appendChild(tr)})}
+function domesticTableStats(c,cutoff=null){
+  const teams=TEAMS_BY_LEAGUE[c]||[],out=Object.fromEntries(teams.map(t=>[t,{g:0,w:0,d:0,l:0,gf:0,ga:0}]));
+  for(const f of chronological(allFixtures().filter(f=>f.competition===c&&(!cutoff||f.date<=cutoff)))){
+    const sc=scoreValue(f);if(!sc)continue;
+    const home=typeof resolveTrackedFixtureName==="function"?resolveTrackedFixtureName(f.home,c):canonicalName(f.home);
+    const away=typeof resolveTrackedFixtureName==="function"?resolveTrackedFixtureName(f.away,c):canonicalName(f.away);
+    if(!out[home]||!out[away])continue;
+    const [hg,ag]=sc,H=out[home],A=out[away];
+    H.g++;A.g++;H.gf+=hg;H.ga+=ag;A.gf+=ag;A.ga+=hg;
+    if(hg>ag){H.w++;A.l++}else if(hg<ag){A.w++;H.l++}else{H.d++;A.d++}
+  }
+  return out;
+}
+function renderStandingRows(c){
+  const p=$(`#${c}-period`).value,teams=TEAMS_BY_LEAGUE[c];let after,before=null,cutoff=null;
+  if(p==="all")after=recalc();
+  else{cutoff=lastRoundDate(c,p);after=recalc(cutoff);before=recalc(prevRoundDate(c,p))}
+  const leagueStats=domesticTableStats(c,cutoff),world=ordered(ALL_TRACKED,after.ratings),wp=Object.fromEntries(world.map((t,i)=>[t,i+1])),
+    rows=world.filter(t=>teams.includes(t)),body=$(`#${c}-body`);
+  $(`#${c}-head`).innerHTML=p==="all"?'<tr><th># League</th><th># World</th><th>Club</th><th>Rating</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>GD</th></tr>':'<tr><th># League</th><th># World</th><th>Club</th><th>Rating</th><th>Δ</th><th>Move</th><th>MP</th><th>W</th><th>D</th><th>L</th></tr>';
+  let bp={};if(before)ordered(teams,before.ratings).forEach((t,i)=>bp[t]=i+1);body.innerHTML="";
+  rows.forEach((t,i)=>{
+    const s=leagueStats[t],tr=document.createElement("tr"),club=`<button class="club-link">${t}</button>`;
+    if(p==="all"){
+      const gd=s.gf-s.ga;
+      tr.innerHTML=`<td>${i+1}</td><td>${wp[t]}</td><td>${club}</td><td><b>${fmt(after.ratings[t])}</b></td><td>${s.g}</td><td>${s.w}</td><td>${s.d}</td><td>${s.l}</td><td>${gd>0?"+":""}${gd}</td>`;
+    }else{
+      const delta=after.ratings[t]-before.ratings[t],mv=bp[t]-(i+1);
+      tr.innerHTML=`<td>${i+1}</td><td>${wp[t]}</td><td>${club}</td><td><b>${fmt(after.ratings[t])}</b></td><td>${signfmt(delta)}</td><td>${movement(mv)}</td><td>${s.g}</td><td>${s.w}</td><td>${s.d}</td><td>${s.l}</td>`;
+    }
+    tr.querySelector(".club-link").onclick=()=>openClub(t);body.appendChild(tr);
+  });
+}
 function worldPanel(){return`<section id="main-world" class="main-panel"><div class="page-head"><div><span>All tracked domestic clubs</span><h2>World Ranking</h2></div><b>${ALL_TRACKED.length} clubs</b></div><div class="card filters"><select id="worldPeriod"><option value="all">Overall / current</option></select><input id="worldSearch" placeholder="Search clubs…"><button id="worldAll">All leagues</button></div><div class="card"><div id="leagueFilters" class="chips"></div></div><div class="card"><table><thead id="worldHead"></thead><tbody id="worldBody"></tbody></table></div></section>`}
 let LEAGUE_FILTER=new Set(Object.keys(TEAMS_BY_LEAGUE));
