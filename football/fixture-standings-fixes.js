@@ -112,13 +112,17 @@
     }
   }
 
-  const loadBeforeFixtureRepair = loadFixtures;
-  loadFixtures = async function () {
-    const result = await loadBeforeFixtureRepair();
+  function repairLoadedFixtures() {
     FIXTURES.forEach(f => {
       if (COMP[f.competition]?.type === "europe") normalizeEuropeanFixture(f);
     });
     normalizeDomesticRounds();
+  }
+
+  const loadBeforeFixtureRepair = loadFixtures;
+  loadFixtures = async function () {
+    const result = await loadBeforeFixtureRepair();
+    repairLoadedFixtures();
 
     // Migrate old non-participant spelling ratings, respecting an explicit
     // participant rating that the manager has already saved.
@@ -292,5 +296,21 @@
   });
   const panels = document.getElementById("panels");
   if (panels) observer.observe(panels, { childList: true, subtree: true });
+
+  // app-ui-4 invokes init() before this script is parsed. That first call may
+  // already be awaiting its JSON fetch, so it has captured the previous
+  // loadFixtures function. Apply the same repair immediately when it finishes.
+  const syncLabel = document.getElementById("syncStatus");
+  if (syncLabel) {
+    const initialLoadObserver = new MutationObserver(() => {
+      if (!FIXTURES.length) return;
+      repairLoadedFixtures();
+      const active = document.querySelector(".main-panel.active")?.id?.replace("main-", "");
+      if (active && COMP[active]) renderCompetition(active);
+      else if (active === "world") renderWorld();
+    });
+    initialLoadObserver.observe(syncLabel, { childList: true, subtree: true, characterData: true });
+  }
+  if (FIXTURES.length) repairLoadedFixtures();
   prepareSortables();
 })();
