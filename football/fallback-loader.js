@@ -6,7 +6,9 @@ const OF_CALENDARS={
  ligue1:"https://raw.githubusercontent.com/openfootball/europe/master/france/2026-27_fr1.txt",
  eredivisie:"https://raw.githubusercontent.com/openfootball/europe/master/netherlands/2026-27_nl1.txt",
  primeira:"https://raw.githubusercontent.com/openfootball/europe/master/portugal/2026-27_pt1.txt",
- seriea:"https://raw.githubusercontent.com/openfootball/italy/master/2026-27/1-seriea.txt"
+ seriea:"https://raw.githubusercontent.com/openfootball/italy/master/2026-27/1-seriea.txt",
+ tur:"https://raw.githubusercontent.com/openfootball/europe/master/turkey/2026-27_tr1.txt",
+ gre:"https://raw.githubusercontent.com/openfootball/europe/master/greece/2026-27_gr1.txt"
 };
 const OF_NAMES={
  laliga:{
@@ -26,6 +28,27 @@ const OF_NAMES={
  primeira:{"Académico de Viseu FC":"Académico","GD Estoril Praia":"Estoril Praia","CF Estrela da Amadora":"Estrela Amadora","CS Marítimo":"Marítimo M.","CD Santa Clara":"Santa Clara","Sporting Clube de Braga":"SC Braga","Sport Lisboa e Benfica":"SL Benfica","Sporting Clube de Portugal":"Sporting CP","Vitória Guimarães":"Vitória SC"},
  seriea:{"Atalanta BC":"Atalanta","Bologna FC 1909":"Bologna","Cagliari Calcio":"Cagliari","Como 1907":"Como","ACF Fiorentina":"Fiorentina","Frosinone Calcio":"Frosinone","Genoa CFC":"Genoa","FC Internazionale Milano":"Internazionale","Juventus FC":"Juventus","SS Lazio":"Lazio","US Lecce":"Lecce","AC Milan":"Milan","AC Monza":"Monza","SSC Napoli":"Napoli","Parma Calcio 1913":"Parma","AS Roma":"Roma","US Sassuolo Calcio":"Sassuolo","Torino FC":"Torino","Udinese Calcio":"Udinese","Venezia FC":"Venezia"}
 };
+const ADDITIONAL_DOMESTIC_NAMES={
+ tur:{
+  "Galatasaray":"Galatasaray","Fenerbahçe":"Fenerbahçe","Beşiktaş":"Besiktas",
+  "Trabzonspor":"Trabzonspor","Samsunspor":"Samsunspor",
+  "İstanbul Başakşehir":"Istanbul Basaksehir","Göztepe":"Goztepe",
+  "Kocaelispor":"Kocaelispor","Gaziantep FK":"Gaziantep FK",
+  "Aytemiz Alanyaspor":"Alanyaspor","Çaykur Rizespor":"Caykur Rizespor",
+  "Atiker Konyaspor":"Konyaspor","Kasimpasa":"Kasimpasa",
+  "Gençlerbirligi":"Genclerbirligi","Eyüpspor":"Eyupspor",
+  "BB Erzurumspor":"Erzurumspor","Amed":"Amed SFK","Çorum":"Corum FK"
+ },
+ gre:{
+  "Olympiakos Piraeus":"Olympiacos","PAOK":"PAOK","AEK":"AEK Athens",
+  "Panathinaikos":"Panathinaikos","Aris Thessaloniki":"Aris",
+  "OFI":"OFI Crete","Levadiakos":"Levadiakos","Atromitos":"Atromitos",
+  "Asteras Tripolis":"Asteras Tripolis","Volos":"Volos",
+  "Panetolikos":"Panetolikos","Kifisia":"Kifisia",
+  "Iraklis 1908":"Iraklis","Kalamata":"Kalamata"
+ }
+};
+Object.assign(OF_NAMES,ADDITIONAL_DOMESTIC_NAMES);
 function ofMonth(m){return{Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12}[m]}
 function ofDate(y,m,d){return`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`}
 function ofName(c,n){n=String(n||"").replace(/\s+/g," ").trim();return OF_NAMES[c]?.[n]||n}
@@ -61,6 +84,47 @@ function parseOpenFootball(txt,c){
  }
  const unique=new Map();for(const f of raw)unique.set(`${f.round}|${f.home}|${f.away}`,f);
  return[...unique.values()].map(f=>({...f,id:`fallback|${f.competition}|${f.round}|${f.home}|${f.away}`}));
+}
+// Turkey and Greece use the OpenFootball "Regular Season - N" layout with
+// inline final scores (Team 2-1 (1-0) Team), unlike some other league files.
+function parseOpenFootballDomesticSeason(txt,c){
+ let round=null,date=null,year=2026,lastMonth=null;
+ const raw=[];
+ for(const line of String(txt||"").split(/\r?\n/)){
+  let m=line.trim().match(/^▪\s*Regular Season\s*-\s*(\d+)\s*$/i);
+  if(m){round=Number(m[1]);date=null;continue;}
+  m=line.trim().match(/^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Z][a-z]{2})\s+(\d{1,2})(?:\s+(\d{4}))?$/);
+  if(m){
+   const month=ofMonth(m[1]);
+   if(m[3])year=Number(m[3]);
+   else if(lastMonth!=null&&month<lastMonth-6)year++;
+   lastMonth=month;
+   date=ofDate(year,month,Number(m[2]));
+   continue;
+  }
+  if(round==null||!date)continue;
+  let time="TBD",home="",away="",homeScore=null,awayScore=null;
+  // A completed fixture, optional kickoff time and half-time score.
+  m=line.match(/^\s*(?:(\d{1,2}:\d{2})\s+)?(.+?)\s{2,}(\d+)\s*-\s*(\d+)(?:\s*\([^)]*\))?\s{2,}(.+?)\s*$/);
+  if(m){
+   time=m[1]||"TBD";home=m[2].trim();homeScore=Number(m[3]);
+   awayScore=Number(m[4]);away=m[5].trim();
+  }else{
+   // Future fixture, possibly without an announced time.
+   m=line.match(/^\s*(?:(\d{1,2}:\d{2})\s+)?(.+?)\s+v\s+(.+?)\s*$/);
+   if(!m)continue;
+   time=m[1]||"TBD";home=m[2].trim();away=m[3].trim();
+  }
+  home=ofName(c,home);away=ofName(c,away);
+  if(!home||!away||home===away)continue;
+  raw.push({competition:c,round,date,time,home,away,
+   stage:"Matchday "+round,completed:homeScore!==null,homeScore,awayScore,
+   provisional:time==="TBD",source:"openfootball"});
+ }
+ const unique=new Map();
+ for(const f of raw)unique.set(f.round+"|"+f.home+"|"+f.away,f);
+ return [...unique.values()].map(f=>({...f,
+  id:"fallback|"+f.competition+"|"+f.round+"|"+f.home+"|"+f.away}));
 }
 function uefaFallback(){const out=[];for(const [c,arr] of Object.entries(window.UEFA_FALLBACK_FIXTURES||{}))(arr||[]).forEach((f,i)=>out.push({...f,stage:f.phase||f.stage||"UEFA",completed:false,source:"uefa-fallback",id:`fallback|${c}|${i}|${f.date}|${f.home}|${f.away}`}));return out}
 
@@ -129,7 +193,7 @@ function mergeEspn(base,synced){
 }
 async function loadFixtures(){
  const base=uefaFallback();
- const domestic=await Promise.all(Object.entries(OF_CALENDARS).map(async([c,url])=>{try{const r=await fetch(`${url}?v=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(String(r.status));return parseOpenFootball(await r.text(),c)}catch(e){console.warn(`Fallback calendar failed for ${c}`,e);return[]}}));
+ const domestic=await Promise.all(Object.entries(OF_CALENDARS).map(async([c,url])=>{try{const r=await fetch(`${url}?v=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(String(r.status));const txt=await r.text();return c==="tur"||c==="gre"?parseOpenFootballDomesticSeason(txt,c):parseOpenFootball(txt,c)}catch(e){console.warn(`Fallback calendar failed for ${c}`,e);return[]}}));
  domestic.forEach(a=>base.push(...a));
  let d={generatedAt:null,source:"Fallback calendars",fixtures:[]};try{const r=await fetch(`matches.json?v=${Date.now()}`,{cache:"no-store"});if(r.ok)d=await r.json()}catch(e){console.warn("matches.json unavailable",e)}
  FIXTURES=mergeEspn(base,d.fixtures||[]);
