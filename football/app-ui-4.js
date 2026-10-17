@@ -48,14 +48,14 @@ function openClub(team){
       <button id="closeClub">Close</button>
     </div>
     <div class="metrics">
-      <div><small>Current rating</small><b>${fmt(current)}</b></div>
-      <div><small>Highest league rank</small><b>${bestLeague?"#"+bestLeague:"—"}</b></div>
-      <div><small>World rank</small><b>${ranked?"#"+(world.indexOf(team)+1):"Not ranked"}</b></div>
-      <div><small>League rank</small><b>${league?"#"+(lr.indexOf(team)+1):"UEFA only"}</b></div>
+      <div><small>Rating</small><b>${fmt(current)}</b></div>
       <div><small>Matches</small><b>${st.g}</b></div>
       <div><small>W-D-L</small><b>${st.w}-${st.d}-${st.l}</b></div>
       <div><small>Goals</small><b>${st.gf}-${st.ga}</b></div>
+      <div><small>World rank</small><b>${ranked?"#"+(world.indexOf(team)+1):"Not ranked"}</b></div>
       <div><small>Highest world rank</small><b>${bestWorld?"#"+bestWorld:"—"}</b></div>
+      <div><small>League rank</small><b>${league?"#"+(lr.indexOf(team)+1):"UEFA only"}</b></div>
+      <div><small>Highest league rank</small><b>${bestLeague?"#"+bestLeague:"—"}</b></div>
     </div>
     <div class="card" style="margin:14px 0;padding:12px">
       <div class="filters" style="margin-bottom:8px">
