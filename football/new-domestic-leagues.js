@@ -66,4 +66,20 @@
     save();
     localStorage.setItem(marker,"1");
   }
+
+  // Upgrade the previous default domestic match weight (0.62) just once.
+  // Do not overwrite any independently customized weight.
+  const factorMigration="football_tur_gre_match_factors_060_v1";
+  if(!localStorage.getItem(factorMigration)){
+    let changed=false;
+    for(const c of ["tur","gre"]){
+      const key="factor_"+c;
+      if(Number(state.settings[key])===0.62){
+        state.settings[key]=0.6;
+        changed=true;
+      }
+    }
+    if(changed)save();
+    localStorage.setItem(factorMigration,"1");
+  }
 })();
