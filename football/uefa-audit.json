@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-18T18:06:07.220Z",
+  "generatedAt": "2026-10-18T20:39:32.647Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -1438,7 +1438,7 @@
         "sourceEventId": "401915394",
         "date": "2026-10-21",
         "home": "Aston Villa",
-        "away": "VIKING FK",
+        "away": "Viking FK",
         "completed": false,
         "homeScore": null,
         "awayScore": null,
@@ -1723,7 +1723,7 @@
       {
         "sourceEventId": "401915302",
         "date": "2026-11-04",
-        "home": "VIKING FK",
+        "home": "Viking FK",
         "away": "Sabah FK",
         "completed": false,
         "homeScore": null,
