@@ -18,3 +18,16 @@ th.click-sort{cursor:pointer;user-select:none;white-space:nowrap}
 th.click-sort:hover,th.click-sort:focus-visible{color:#eef4ff;background:#243650;outline:1px solid #74a9ff77}
 th.click-sort[aria-sort="ascending"]::after{content:" ▲";color:#74a9ff}
 th.click-sort[aria-sort="descending"]::after{content:" ▼";color:#74a9ff}
+
+/* UEFA-style points tables in all domestic leagues. */
+.domestic-standings-card .section-title{gap:12px}
+.domestic-standings-card .section-title h3{margin:0}
+.domestic-standings-card .domestic-period-bar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:14px 0 16px}
+.domestic-standings-card .domestic-period-bar label{font-size:12px;color:var(--muted)}
+.domestic-standings-card .domestic-period-bar select{min-width:205px;max-width:100%}
+.domestic-standings-card .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.domestic-standings-card table{min-width:710px}
+.domestic-standings-card th,.domestic-standings-card td{white-space:nowrap}
+.domestic-standings-card .domestic-club-col{min-width:160px;width:28%}
+.domestic-standings-card .domestic-swipe-hint{display:none;color:var(--muted);padding-top:9px}
+@media(max-width:780px){.domestic-standings-card .domestic-swipe-hint{display:block}}
