@@ -8,7 +8,16 @@ const addDaysISO=(s,n)=>{const d=parseUTC(s);d.setUTCDate(d.getUTCDate()+n);retu
 function niceDate(s){if(!s)return"";return new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"}).format(parseUTC(s))}
 function teamLeague(t){for(const [k,a] of Object.entries(TEAMS_BY_LEAGUE))if(a.includes(t))return k;return null}
 function tracked(t){return ALL_TRACKED.includes(t)}
-function defaultState(){return{officialDataVersion:OFFICIAL_DATA_VERSION,starts:clone(DEFAULT_STARTS),otherRatings:clone(DEFAULT_OTHER_RATINGS),scores:{},penalties:{},customFixtures:[],settings:clone(DEFAULT_SETTINGS)}}
+// Apply published starting-coefficient revisions exactly once per saved state.
+// This avoids stale start values in older desktop/mobile localStorage and
+// ensures an old exported backup also picks up the latest published values.
+function upgradeOfficialCoefficients(starts,previousRevision){
+  if(Number(previousRevision||0)<OFFICIAL_COEFFICIENT_UPDATE_VERSION){
+    for(const team of OFFICIAL_COEFFICIENT_UPDATED_TEAMS)starts[team]=DEFAULT_STARTS[team];
+  }
+  return starts;
+}
+function defaultState(){return{officialDataVersion:OFFICIAL_DATA_VERSION,coefficientRevision:OFFICIAL_COEFFICIENT_UPDATE_VERSION,starts:clone(DEFAULT_STARTS),otherRatings:clone(DEFAULT_OTHER_RATINGS),scores:{},penalties:{},customFixtures:[],settings:clone(DEFAULT_SETTINGS)}}
 function loadState(){
   try{
     const x=JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -17,7 +26,8 @@ function loadState(){
     const applyOfficial=Number(x.officialDataVersion||0)<OFFICIAL_DATA_VERSION;
     return{
       officialDataVersion:OFFICIAL_DATA_VERSION,
-      starts:applyOfficial?clone(d.starts):Object.assign(d.starts,x.starts||{}),
+      coefficientRevision:OFFICIAL_COEFFICIENT_UPDATE_VERSION,
+      starts:applyOfficial?clone(d.starts):upgradeOfficialCoefficients(Object.assign(d.starts,x.starts||{}),x.coefficientRevision),
       otherRatings:applyOfficial?clone(d.otherRatings):Object.assign(d.otherRatings,x.otherRatings||{}),
       scores:Object.assign({},x.scores||{}),
       penalties:Object.assign({},x.penalties||{}),
@@ -60,7 +70,8 @@ function importState(x){
   const d=defaultState();
   state={
     officialDataVersion:OFFICIAL_DATA_VERSION,
-    starts:Object.assign(d.starts,x.starts||{}),
+    coefficientRevision:OFFICIAL_COEFFICIENT_UPDATE_VERSION,
+    starts:upgradeOfficialCoefficients(Object.assign(d.starts,x.starts||{}),x.coefficientRevision),
     otherRatings:Object.assign(d.otherRatings,x.otherRatings||{}),
     scores:{},
     penalties:{},
