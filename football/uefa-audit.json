@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-19T06:13:19.142Z",
+  "generatedAt": "2026-10-19T09:17:28.602Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -789,7 +789,7 @@
         "sourceEventId": "401909158",
         "date": "2026-08-18",
         "home": "Dinamo Zagreb",
-        "away": "VIKING FK",
+        "away": "Viking FK",
         "completed": true,
         "homeScore": 2,
         "awayScore": 2,
@@ -931,7 +931,7 @@
       {
         "sourceEventId": "401909157",
         "date": "2026-08-26",
-        "home": "VIKING FK",
+        "home": "Viking FK",
         "away": "Dinamo Zagreb",
         "completed": true,
         "homeScore": 3,
@@ -1064,7 +1064,7 @@
         "sourceEventId": "401915448",
         "date": "2026-09-09",
         "home": "VfB Stuttgart",
-        "away": "VIKING FK",
+        "away": "Viking FK",
         "completed": true,
         "homeScore": 3,
         "awayScore": 1,
@@ -1217,7 +1217,7 @@
       {
         "sourceEventId": "401915411",
         "date": "2026-10-13",
-        "home": "VIKING FK",
+        "home": "Viking FK",
         "away": "Bayern Munich",
         "completed": true,
         "homeScore": 3,
@@ -1834,7 +1834,7 @@
         "sourceEventId": "401915291",
         "date": "2026-11-25",
         "home": "Atlético Madrid",
-        "away": "VIKING FK",
+        "away": "Viking FK",
         "completed": false,
         "homeScore": null,
         "awayScore": null,
@@ -2009,7 +2009,7 @@
       {
         "sourceEventId": "401915290",
         "date": "2026-12-08",
-        "home": "VIKING FK",
+        "home": "Viking FK",
         "away": "Feyenoord Rotterdam",
         "completed": false,
         "homeScore": null,
@@ -2317,7 +2317,7 @@
       {
         "sourceEventId": "401915272",
         "date": "2027-01-20",
-        "home": "VIKING FK",
+        "home": "Viking FK",
         "away": "PSV Eindhoven",
         "completed": false,
         "homeScore": null,
@@ -2450,7 +2450,7 @@
         "sourceEventId": "401915268",
         "date": "2027-01-27",
         "home": "Napoli",
-        "away": "VIKING FK",
+        "away": "Viking FK",
         "completed": false,
         "homeScore": null,
         "awayScore": null,
