@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-20T15:03:17.690Z",
+  "generatedAt": "2026-10-20T19:13:55.362Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -1344,7 +1344,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FIRST_HALF"
       },
       {
         "sourceEventId": "401915398",
@@ -1355,18 +1355,18 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FIRST_HALF"
       },
       {
         "sourceEventId": "401915403",
         "date": "2026-10-20",
         "home": "Fenerbahce",
         "away": "Slavia Prague",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 2,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915397",
@@ -1377,7 +1377,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FIRST_HALF"
       },
       {
         "sourceEventId": "401915401",
@@ -1388,7 +1388,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FIRST_HALF"
       },
       {
         "sourceEventId": "401915400",
@@ -1399,7 +1399,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FIRST_HALF"
       },
       {
         "sourceEventId": "401915399",
@@ -1410,18 +1410,18 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_IN_PROGRESS"
       },
       {
         "sourceEventId": "401915404",
         "date": "2026-10-20",
         "home": "Sabah FK",
         "away": "Borussia Dortmund",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 2,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915392",
@@ -1432,7 +1432,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FIRST_HALF"
       },
       {
         "sourceEventId": "401915394",
