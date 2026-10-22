@@ -5,7 +5,7 @@
 (function(){
   function tierAdjustmentFactor(delta,rating){
     if(!delta)return 1;
-    const s=state.settings;
+    const s=DEFAULT_SETTINGS;
     const good=Number(s.goodThreshold),top=Number(s.topThreshold),elite=Number(s.eliteThreshold);
     if(delta>0){
       if(elite>0&&rating>=elite)return Number(s.eliteWinFactor);
@@ -36,15 +36,15 @@
         ar=tracked(f.away)||other.has(f.away);
       if(!hr&&!ar)continue;
 
-      const rh=hr?ratings[f.home]:Number(state.settings.externalRating),
-        ra=ar?ratings[f.away]:Number(state.settings.externalRating),
+      const rh=hr?ratings[f.home]:Number(DEFAULT_SETTINGS.externalRating),
+        ra=ar?ratings[f.away]:Number(DEFAULT_SETTINGS.externalRating),
         eh=expectation(rh,ra),ea=1-eh,
         [sh,sa]=scoreOutcome(hg,ag),
         m=marginMultiplier(hg,ag),
         str=strengthFactor(rh,ra,hg,ag),
         cf=compFactor(f.competition),
-        rawH=Number(state.settings.k)*(sh-eh)*m*str*cf,
-        rawA=Number(state.settings.k)*(sa-ea)*m*str*cf,
+        rawH=Number(DEFAULT_SETTINGS.k)*(sh-eh)*m*str*cf,
+        rawA=Number(DEFAULT_SETTINGS.k)*(sa-ea)*m*str*cf,
         vh=venueFactor(true,hg,ag,rawH),
         va=venueFactor(false,hg,ag,rawA),
         baseH=rawH*vh,
@@ -61,10 +61,10 @@
       if(pen==="home"||pen==="away"){
         const hh=pen==="home"?1:0,aa=pen==="home"?0:1,
           [psh,psa]=scoreOutcome(hh,aa),
-          pm=Number(state.settings.margin1),
+          pm=Number(DEFAULT_SETTINGS.margin1),
           pst=strengthFactor(rh,ra,hh,aa),
-          prh=Number(state.settings.k)*(psh-eh)*pm*pst*cf,
-          pra=Number(state.settings.k)*(psa-ea)*pm*pst*cf,
+          prh=Number(DEFAULT_SETTINGS.k)*(psh-eh)*pm*pst*cf,
+          pra=Number(DEFAULT_SETTINGS.k)*(psa-ea)*pm*pst*cf,
           pbaseH=prh*venueFactor(true,hh,aa,prh),
           pbaseA=pra*venueFactor(false,hh,aa,pra),
           pTierH=hr?tierAdjustmentFactor(pbaseH,rh):1,
@@ -75,7 +75,7 @@
         dh+=ph;da+=pa;
       }
 
-      const min=Number(state.settings.minRating),max=Number(state.settings.maxRating);
+      const min=Number(DEFAULT_SETTINGS.minRating),max=Number(DEFAULT_SETTINGS.maxRating);
       if(hr)ratings[f.home]=clamp(rh+dh,min,max);
       if(ar)ratings[f.away]=clamp(ra+da,min,max);
 
