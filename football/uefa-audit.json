@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-22T18:31:00.522Z",
+  "generatedAt": "2026-10-22T22:18:41.274Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -3696,198 +3696,198 @@
         "date": "2026-10-22",
         "home": "AFC Bournemouth",
         "away": "AC Milan",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 3,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915548",
         "date": "2026-10-22",
         "home": "Ararat-Armenia",
         "away": "AZ Alkmaar",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 0,
+        "awayScore": 4,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915553",
         "date": "2026-10-22",
         "home": "Besiktas",
         "away": "Crystal Palace",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 2,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915555",
         "date": "2026-10-22",
         "home": "Celtic",
         "away": "Celta Vigo",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 2,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915556",
         "date": "2026-10-22",
         "home": "Dinamo Zagreb",
         "away": "NEC Nijmegen",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 4,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915558",
         "date": "2026-10-22",
         "home": "Ferencvaros",
         "away": "Torreense",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 4,
+        "awayScore": 1,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915542",
         "date": "2026-10-22",
         "home": "Jagiellonia Bialystok",
         "away": "Anderlecht",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 0,
+        "awayScore": 3,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915547",
         "date": "2026-10-22",
         "home": "Juventus",
         "away": "Stade Rennais",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 2,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915546",
         "date": "2026-10-22",
         "home": "Lech Poznan",
         "away": "Sunderland",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 1,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915540",
         "date": "2026-10-22",
         "home": "Lillestrom",
         "away": "Real Sociedad",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 0,
+        "awayScore": 6,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915541",
         "date": "2026-10-22",
         "home": "NK Celje",
         "away": "RB Salzburg",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 2,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915559",
         "date": "2026-10-22",
         "home": "OFI Crete",
         "away": "Bayer Leverkusen",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 0,
+        "awayScore": 2,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915554",
         "date": "2026-10-22",
         "home": "Olympiacos",
         "away": "Sparta Prague",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915544",
         "date": "2026-10-22",
         "home": "Omonia Nicosia",
         "away": "Benfica",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 4,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915557",
         "date": "2026-10-22",
         "home": "SK Sturm Graz",
         "away": "Marseille",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915543",
         "date": "2026-10-22",
         "home": "TSG Hoffenheim",
         "away": "Lyon",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 3,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915545",
         "date": "2026-10-22",
         "home": "Union St.-Gilloise",
         "away": "Hapoel Be'er",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 4,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915539",
         "date": "2026-10-22",
         "home": "Viktoria Plzen",
         "away": "Levski Sofia",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 2,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915534",
@@ -6976,132 +6976,132 @@
         "date": "2026-10-22",
         "home": "AGF",
         "away": "Egnatia",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 1,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915837",
         "date": "2026-10-22",
         "home": "Ajax Amsterdam",
         "away": "Atalanta",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915836",
         "date": "2026-10-22",
         "home": "AS Monaco",
         "away": "SC Freiburg",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 3,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915743",
         "date": "2026-10-22",
         "home": "Borac Banja Luka",
         "away": "KuPS Kuopio",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915832",
         "date": "2026-10-22",
         "home": "Braga",
         "away": "KAA Gent",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915835",
         "date": "2026-10-22",
         "home": "FC Midtjylland",
         "away": "Sint-Truidense",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 0,
+        "awayScore": 1,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915844",
         "date": "2026-10-22",
         "home": "FC Nordsjælland",
         "away": "CSKA Sofia",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 2,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_IN_PROGRESS"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915834",
         "date": "2026-10-22",
         "home": "FC Thun",
         "away": "Hajduk Split",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 0,
+        "awayScore": 1,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915840",
         "date": "2026-10-22",
         "home": "Getafe",
         "away": "FC Lugano",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 5,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915845",
         "date": "2026-10-22",
         "home": "Iberia 1999",
         "away": "Mjällby AIF",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 1,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_IN_PROGRESS"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915839",
         "date": "2026-10-22",
         "home": "Inter D'Escaldes",
         "away": "CSU Craiova",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 3,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915842",
         "date": "2026-10-22",
         "home": "Jablonec",
         "away": "Brighton & Hove Albion",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 0,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915846",
@@ -7119,55 +7119,55 @@
         "date": "2026-10-22",
         "home": "Kauno Zalgiris",
         "away": "SK Brann",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 4,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915833",
         "date": "2026-10-22",
         "home": "Lincoln Red Imps",
         "away": "FC Twente",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 4,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915838",
         "date": "2026-10-22",
         "home": "Pafos",
         "away": "Riga FC",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 1,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915843",
         "date": "2026-10-22",
         "home": "Red Star Belgrade",
         "away": "F.C. København",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 2,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915745",
         "date": "2026-10-22",
         "home": "Trabzonspor",
         "away": "Heart of Midlothian",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SECOND_HALF"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915831",
