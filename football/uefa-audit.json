@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-28T12:50:30.251Z",
+  "generatedAt": "2026-10-28T18:51:52.350Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -4056,7 +4056,7 @@
       },
       {
         "sourceEventId": "401915551",
-        "date": "2026-11-05",
+        "date": "2026-11-04",
         "home": "Stade Rennais",
         "away": "Olympiacos",
         "completed": false,
