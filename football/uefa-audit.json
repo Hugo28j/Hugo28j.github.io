@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-28T18:51:52.350Z",
+  "generatedAt": "2026-10-28T23:12:59.799Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -3890,6 +3890,17 @@
         "statusName": "STATUS_FULL_TIME"
       },
       {
+        "sourceEventId": "401915551",
+        "date": "2026-11-04",
+        "home": "Stade Rennais",
+        "away": "Olympiacos",
+        "completed": false,
+        "homeScore": null,
+        "awayScore": null,
+        "sourceLeague": "uefa.europa",
+        "statusName": "STATUS_SCHEDULED"
+      },
+      {
         "sourceEventId": "401915534",
         "date": "2026-11-05",
         "home": "AC Milan",
@@ -4048,17 +4059,6 @@
         "date": "2026-11-05",
         "home": "Sparta Prague",
         "away": "AFC Bournemouth",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
-        "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
-      },
-      {
-        "sourceEventId": "401915551",
-        "date": "2026-11-04",
-        "home": "Stade Rennais",
-        "away": "Olympiacos",
         "completed": false,
         "homeScore": null,
         "awayScore": null,
