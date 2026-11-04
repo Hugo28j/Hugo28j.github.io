@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-04T14:34:27.857Z",
+  "generatedAt": "2026-11-04T21:18:45.044Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -1637,11 +1637,11 @@
         "date": "2026-11-04",
         "home": "AEK Athens",
         "away": "Real Madrid",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 3,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915304",
@@ -1652,7 +1652,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_SECOND_HALF"
       },
       {
         "sourceEventId": "401915301",
@@ -1663,18 +1663,18 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_SECOND_HALF"
       },
       {
         "sourceEventId": "401915382",
         "date": "2026-11-04",
         "home": "Fenerbahce",
         "away": "Liverpool",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 3,
+        "awayScore": 2,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915305",
@@ -1685,7 +1685,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_SECOND_HALF"
       },
       {
         "sourceEventId": "401915303",
@@ -1696,7 +1696,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_SECOND_HALF"
       },
       {
         "sourceEventId": "401915306",
@@ -1707,7 +1707,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_SECOND_HALF"
       },
       {
         "sourceEventId": "401915381",
@@ -1718,7 +1718,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_SECOND_HALF"
       },
       {
         "sourceEventId": "401915302",
@@ -1729,7 +1729,7 @@
         "homeScore": null,
         "awayScore": null,
         "sourceLeague": "uefa.champions",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_SECOND_HALF"
       },
       {
         "sourceEventId": "401915295",
@@ -3894,11 +3894,11 @@
         "date": "2026-11-04",
         "home": "Stade Rennais",
         "away": "Olympiacos",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
+        "completed": true,
+        "homeScore": 0,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa",
-        "statusName": "STATUS_SCHEDULED"
+        "statusName": "STATUS_FULL_TIME"
       },
       {
         "sourceEventId": "401915534",
