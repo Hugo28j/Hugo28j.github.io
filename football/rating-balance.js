@@ -3,19 +3,24 @@
 // to the opponent's opposite rating change as well. This keeps the rating pool
 // close to zero-sum over time (apart from hard min/max clamps).
 (function(){
+  // Evaluate the pre-match rating: <50, 50-75, 75-85, 85-90,
+  // 90-95 and 95+. Only the highest matching tier applies.
   function tierAdjustmentFactor(delta,rating){
     if(!delta)return 1;
     const s=DEFAULT_SETTINGS;
-    const good=Number(s.goodThreshold),top=Number(s.topThreshold),elite=Number(s.eliteThreshold);
     if(delta>0){
-      if(elite>0&&rating>=elite)return Number(s.eliteWinFactor);
-      if(top>0&&rating>=top)return Number(s.topWinFactor);
-      if(good>0&&rating>=good)return Number(s.goodWinFactor);
-      return 1;
+      if(rating>=s.ultraThreshold)return Number(s.ultraWinFactor);
+      if(rating>=s.eliteThreshold)return Number(s.eliteWinFactor);
+      if(rating>=s.topThreshold)return Number(s.topWinFactor);
+      if(rating>=s.goodThreshold)return Number(s.goodWinFactor);
+      if(rating<s.lowThreshold)return Number(s.lowWinFactor);
+    }else{
+      if(rating>=s.ultraThreshold)return Number(s.ultraLossFactor);
+      if(rating>=s.eliteThreshold)return Number(s.eliteLossFactor);
+      if(rating>=s.topThreshold)return Number(s.topLossFactor);
+      if(rating>=s.goodThreshold)return Number(s.goodLossFactor);
+      if(rating<s.lowThreshold)return Number(s.lowLossFactor);
     }
-    if(elite>0&&rating>=elite)return Number(s.eliteLossFactor);
-    if(top>0&&rating>=top)return Number(s.topLossFactor);
-    if(good>0&&rating>=good)return Number(s.goodLossFactor);
     return 1;
   }
 
