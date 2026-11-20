@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-20T03:10:23.294Z",
+  "generatedAt": "2026-11-20T11:33:29.914Z",
   "source": "ESPN scores + official UEFA qualifier pairing validation",
   "fullSync": false,
   "requests": 32,
@@ -37853,8 +37853,8 @@
       "sourceLeague": "gre.1",
       "sourceEventId": "401896805",
       "date": "2026-12-06",
-      "time": "18:00",
-      "kickoff": "2026-12-06T18:00Z",
+      "time": "16:00",
+      "kickoff": "2026-12-06T16:00Z",
       "home": "OFI Crete",
       "away": "Iraklis",
       "round": null,
