@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-22T03:09:01.945Z",
+  "generatedAt": "2026-11-22T11:17:49.306Z",
   "source": "ESPN scores + official UEFA qualifier pairing validation",
   "fullSync": false,
   "requests": 32,
@@ -33461,9 +33461,9 @@
       "stage": "",
       "completed": false,
       "postponed": false,
-      "statusName": "STATUS_SCHEDULED",
-      "statusDescription": "Scheduled",
-      "statusState": "pre",
+      "statusName": "STATUS_FIRST_HALF",
+      "statusDescription": "First Half",
+      "statusState": "in",
       "homeScore": null,
       "awayScore": null,
       "penaltyWinner": null
