@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T14:14:13.829Z",
+  "generatedAt": "2026-11-24T17:39:10.917Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -18,7 +18,7 @@
   "officialFetch": {
     "ucl": {
       "ok": true,
-      "length": 9019,
+      "length": 9036,
       "url": "https://www.uefa.com/uefachampionsleague/news/02a6-20e5a8be4e63-ae971c582f8c-1000--champions-league-qualifying-fixtures-dates-how-it-works/"
     },
     "uel": {
