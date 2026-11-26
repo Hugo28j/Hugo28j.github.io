@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-26T04:59:45.151Z",
+  "generatedAt": "2026-11-26T13:06:49.803Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -23,12 +23,12 @@
     },
     "uel": {
       "ok": true,
-      "length": 7466,
+      "length": 7483,
       "url": "https://www.uefa.com/uefaeuropaleague/news/02a6-20e5db0029dd-8241a8d00925-1000--europa-league-qualifying-fixtures-dates-how-it-works/"
     },
     "uecl": {
       "ok": true,
-      "length": 12964,
+      "length": 12981,
       "url": "https://www.uefa.com/uefaconferenceleague/news/02a6-20e5e911587f-cc10425958b3-1000--conference-league-qualifying-fixtures-dates-how-it-works/"
     }
   },
