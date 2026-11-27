@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-27T13:04:49.235Z",
+  "generatedAt": "2026-11-27T18:56:11.807Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -302,17 +302,6 @@
         "statusName": "STATUS_FULL_TIME"
       },
       {
-        "sourceEventId": "401877976",
-        "date": "2026-07-15",
-        "home": "Universitatea Craiova",
-        "away": "ML Vitebsk",
-        "completed": true,
-        "homeScore": 1,
-        "awayScore": 0,
-        "sourceLeague": "uefa.champions_qual",
-        "statusName": "STATUS_FULL_TIME"
-      },
-      {
         "sourceEventId": "401877818",
         "date": "2026-07-15",
         "home": "Egnatia",
@@ -342,6 +331,17 @@
         "completed": true,
         "homeScore": 0,
         "awayScore": 2,
+        "sourceLeague": "uefa.champions_qual",
+        "statusName": "STATUS_FULL_TIME"
+      },
+      {
+        "sourceEventId": "401877976",
+        "date": "2026-07-15",
+        "home": "Universitatea Craiova",
+        "away": "ML Vitebsk",
+        "completed": true,
+        "homeScore": 1,
+        "awayScore": 0,
         "sourceLeague": "uefa.champions_qual",
         "statusName": "STATUS_FULL_TIME"
       },
@@ -544,17 +544,6 @@
         "statusName": "STATUS_FULL_TIME"
       },
       {
-        "sourceEventId": "401891787",
-        "date": "2026-07-29",
-        "home": "Universitatea Craiova",
-        "away": "Levski Sofia",
-        "completed": true,
-        "homeScore": 2,
-        "awayScore": 2,
-        "sourceLeague": "uefa.champions_qual",
-        "statusName": "STATUS_FULL_TIME"
-      },
-      {
         "sourceEventId": "401877767",
         "date": "2026-07-29",
         "home": "Gornik Zabrze",
@@ -606,6 +595,17 @@
         "completed": true,
         "homeScore": 1,
         "awayScore": 1,
+        "sourceLeague": "uefa.champions_qual",
+        "statusName": "STATUS_FULL_TIME"
+      },
+      {
+        "sourceEventId": "401891787",
+        "date": "2026-07-29",
+        "home": "Universitatea Craiova",
+        "away": "Levski Sofia",
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 2,
         "sourceLeague": "uefa.champions_qual",
         "statusName": "STATUS_FULL_TIME"
       },
@@ -2988,17 +2988,6 @@
         "statusName": "STATUS_FULL_TIME"
       },
       {
-        "sourceEventId": "401902699",
-        "date": "2026-08-13",
-        "home": "Universitatea Craiova",
-        "away": "KuPS Kuopio",
-        "completed": true,
-        "homeScore": 2,
-        "awayScore": 1,
-        "sourceLeague": "uefa.europa_qual",
-        "statusName": "STATUS_FULL_TIME"
-      },
-      {
         "sourceEventId": "401902562",
         "date": "2026-08-13",
         "home": "Egnatia",
@@ -3054,6 +3043,17 @@
         "statusName": "STATUS_FULL_TIME"
       },
       {
+        "sourceEventId": "401902699",
+        "date": "2026-08-13",
+        "home": "Universitatea Craiova",
+        "away": "KuPS Kuopio",
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 1,
+        "sourceLeague": "uefa.europa_qual",
+        "statusName": "STATUS_FULL_TIME"
+      },
+      {
         "sourceEventId": "401902698",
         "date": "2026-08-13",
         "home": "Vikingur Reykjavik",
@@ -3094,17 +3094,6 @@
         "completed": true,
         "homeScore": 3,
         "awayScore": 0,
-        "sourceLeague": "uefa.europa_qual",
-        "statusName": "STATUS_FULL_TIME"
-      },
-      {
-        "sourceEventId": "401909616",
-        "date": "2026-08-20",
-        "home": "Universitatea Craiova",
-        "away": "Ararat-Armenia",
-        "completed": true,
-        "homeScore": 1,
-        "awayScore": 1,
         "sourceLeague": "uefa.europa_qual",
         "statusName": "STATUS_FULL_TIME"
       },
@@ -3181,6 +3170,17 @@
         "away": "Ferencvaros",
         "completed": true,
         "homeScore": 0,
+        "awayScore": 1,
+        "sourceLeague": "uefa.europa_qual",
+        "statusName": "STATUS_FULL_TIME"
+      },
+      {
+        "sourceEventId": "401909616",
+        "date": "2026-08-20",
+        "home": "Universitatea Craiova",
+        "away": "Ararat-Armenia",
+        "completed": true,
+        "homeScore": 1,
         "awayScore": 1,
         "sourceLeague": "uefa.europa_qual",
         "statusName": "STATUS_FULL_TIME"
@@ -6807,17 +6807,6 @@
         "statusName": "STATUS_FULL_TIME"
       },
       {
-        "sourceEventId": "401915854",
-        "date": "2026-10-15",
-        "home": "Universitatea Craiova",
-        "away": "Getafe",
-        "completed": true,
-        "homeScore": 1,
-        "awayScore": 1,
-        "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_FULL_TIME"
-      },
-      {
         "sourceEventId": "401915859",
         "date": "2026-10-15",
         "home": "Egnatia",
@@ -6967,6 +6956,17 @@
         "away": "Lincoln Red Imps",
         "completed": true,
         "homeScore": 2,
+        "awayScore": 1,
+        "sourceLeague": "uefa.europa.conf",
+        "statusName": "STATUS_FULL_TIME"
+      },
+      {
+        "sourceEventId": "401915854",
+        "date": "2026-10-15",
+        "home": "Universitatea Craiova",
+        "away": "Getafe",
+        "completed": true,
+        "homeScore": 1,
         "awayScore": 1,
         "sourceLeague": "uefa.europa.conf",
         "statusName": "STATUS_FULL_TIME"
@@ -7203,17 +7203,6 @@
         "statusName": "STATUS_FULL_TIME"
       },
       {
-        "sourceEventId": "401915817",
-        "date": "2026-11-05",
-        "home": "Universitatea Craiova",
-        "away": "Egnatia",
-        "completed": true,
-        "homeScore": 2,
-        "awayScore": 0,
-        "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_FULL_TIME"
-      },
-      {
         "sourceEventId": "401915740",
         "date": "2026-11-05",
         "home": "F.C. København",
@@ -7364,6 +7353,17 @@
         "completed": true,
         "homeScore": 0,
         "awayScore": 1,
+        "sourceLeague": "uefa.europa.conf",
+        "statusName": "STATUS_FULL_TIME"
+      },
+      {
+        "sourceEventId": "401915817",
+        "date": "2026-11-05",
+        "home": "Universitatea Craiova",
+        "away": "Egnatia",
+        "completed": true,
+        "homeScore": 2,
+        "awayScore": 0,
         "sourceLeague": "uefa.europa.conf",
         "statusName": "STATUS_FULL_TIME"
       },
