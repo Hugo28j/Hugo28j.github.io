@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-26T23:49:38.073Z",
+  "generatedAt": "2026-11-27T08:24:25.549Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -7830,17 +7830,6 @@
         "statusName": "STATUS_SCHEDULED"
       },
       {
-        "sourceEventId": "401915613",
-        "date": "2026-12-17",
-        "home": "Universitatea Craiova",
-        "away": "F.C. København",
-        "completed": false,
-        "homeScore": null,
-        "awayScore": null,
-        "sourceLeague": "uefa.europa.conf",
-        "statusName": "STATUS_SCHEDULED"
-      },
-      {
         "sourceEventId": "401915625",
         "date": "2026-12-17",
         "home": "FC Lugano",
@@ -7955,6 +7944,17 @@
         "date": "2026-12-17",
         "home": "Red Star Belgrade",
         "away": "Trabzonspor",
+        "completed": false,
+        "homeScore": null,
+        "awayScore": null,
+        "sourceLeague": "uefa.europa.conf",
+        "statusName": "STATUS_SCHEDULED"
+      },
+      {
+        "sourceEventId": "401915613",
+        "date": "2026-12-17",
+        "home": "Universitatea Craiova",
+        "away": "F.C. København",
         "completed": false,
         "homeScore": null,
         "awayScore": null,
