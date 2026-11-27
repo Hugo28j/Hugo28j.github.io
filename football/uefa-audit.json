@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-27T08:24:25.549Z",
+  "generatedAt": "2026-11-27T13:04:49.235Z",
   "policy": "ESPN supplies scores; every qualifier pairing must also appear on the official UEFA qualifying page for that competition. Cross-competition event conflicts are blocked.",
   "officialWindows": {
     "ucl": {
@@ -173,7 +173,7 @@
         "sourceEventId": "401877979",
         "date": "2026-07-08",
         "home": "ML Vitebsk",
-        "away": "CSU Craiova",
+        "away": "Universitatea Craiova",
         "completed": true,
         "homeScore": 1,
         "awayScore": 4,
@@ -304,7 +304,7 @@
       {
         "sourceEventId": "401877976",
         "date": "2026-07-15",
-        "home": "CSU Craiova",
+        "home": "Universitatea Craiova",
         "away": "ML Vitebsk",
         "completed": true,
         "homeScore": 1,
@@ -470,7 +470,7 @@
         "sourceEventId": "401891788",
         "date": "2026-07-22",
         "home": "Levski Sofia",
-        "away": "CSU Craiova",
+        "away": "Universitatea Craiova",
         "completed": true,
         "homeScore": 1,
         "awayScore": 0,
@@ -546,7 +546,7 @@
       {
         "sourceEventId": "401891787",
         "date": "2026-07-29",
-        "home": "CSU Craiova",
+        "home": "Universitatea Craiova",
         "away": "Levski Sofia",
         "completed": true,
         "homeScore": 2,
@@ -2892,7 +2892,7 @@
         "sourceEventId": "401902673",
         "date": "2026-08-06",
         "home": "KuPS Kuopio",
-        "away": "CSU Craiova",
+        "away": "Universitatea Craiova",
         "completed": true,
         "homeScore": 1,
         "awayScore": 1,
@@ -2990,7 +2990,7 @@
       {
         "sourceEventId": "401902699",
         "date": "2026-08-13",
-        "home": "CSU Craiova",
+        "home": "Universitatea Craiova",
         "away": "KuPS Kuopio",
         "completed": true,
         "homeScore": 2,
@@ -3100,7 +3100,7 @@
       {
         "sourceEventId": "401909616",
         "date": "2026-08-20",
-        "home": "CSU Craiova",
+        "home": "Universitatea Craiova",
         "away": "Ararat-Armenia",
         "completed": true,
         "homeScore": 1,
@@ -3211,7 +3211,7 @@
         "sourceEventId": "401909613",
         "date": "2026-08-27",
         "home": "Ararat-Armenia",
-        "away": "CSU Craiova",
+        "away": "Universitatea Craiova",
         "completed": true,
         "homeScore": 1,
         "awayScore": 0,
@@ -6809,7 +6809,7 @@
       {
         "sourceEventId": "401915854",
         "date": "2026-10-15",
-        "home": "CSU Craiova",
+        "home": "Universitatea Craiova",
         "away": "Getafe",
         "completed": true,
         "homeScore": 1,
@@ -7085,7 +7085,7 @@
         "sourceEventId": "401915839",
         "date": "2026-10-22",
         "home": "Inter D'Escaldes",
-        "away": "CSU Craiova",
+        "away": "Universitatea Craiova",
         "completed": true,
         "homeScore": 1,
         "awayScore": 3,
@@ -7205,7 +7205,7 @@
       {
         "sourceEventId": "401915817",
         "date": "2026-11-05",
-        "home": "CSU Craiova",
+        "home": "Universitatea Craiova",
         "away": "Egnatia",
         "completed": true,
         "homeScore": 2,
